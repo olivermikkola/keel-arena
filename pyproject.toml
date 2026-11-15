@@ -11,6 +11,9 @@ requires-python = ">=3.11"
 license = "MIT"
 dependencies = []
 
+[project.optional-dependencies]
+harbor = ["harbor==0.26.0; python_version >= '3.12'"]
+
 [project.scripts]
 keel-arena = "keel_arena.__main__:main"
 

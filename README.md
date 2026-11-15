@@ -11,8 +11,9 @@ Version 0.1 provides a dependency-free Python CLI for validating normalized resu
 and comparing complete, matched task/repetition blocks. It reports solve rates,
 time, known token usage, and complementary successes between models.
 
-It does **not yet launch Keel, provision sandboxes, import Harbor output, or train
-models**. No real-model leaderboard or model improvement is claimed. The included
+It also [imports Harbor 0.26.0 trial evidence](docs/harbor-import.md), checking
+explicit bindings and protected reward artifacts before normalizing results.
+It does **not yet launch Keel, provision sandboxes, or train models**. No real-model leaderboard or model improvement is claimed. The included
 fixture is entirely synthetic and tests reporting behavior only.
 
 ## Try it
@@ -66,6 +67,9 @@ which can themselves be sensitive. There is no automatic public leaderboard.
 A private consumer can use the versioned result contract to locate verified
 training-split trajectories in its own artifact store. Arena does not automatically
 turn failures into preference pairs or export evaluation tasks into training.
+
+The [competitive research](docs/competitive-research.md) records the mechanisms
+selected from Harbor, SWE-bench, Inspect and Aider.
 
 See the [protocol](docs/protocol.md), [result contract](docs/results-v1.md),
 [downstream interface](docs/downstream.md), and [execution roadmap](docs/execution.md).

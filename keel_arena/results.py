@@ -57,8 +57,9 @@ def load(path):
     return data
 
 
-def validate(data):
-    fields(data, "schema_version purpose protocol tasks contestants repetitions attempts", "result")
+def validate_plan(data):
+    """Validate the fixed matrix and protocol before any attempts exist."""
+    fields(data, "schema_version purpose protocol tasks contestants repetitions", "plan")
     require(type(data["schema_version"]) is int and data["schema_version"] == 1,
             "unsupported schema_version")
     require(data["purpose"] in ("demonstration", "benchmark"), "invalid purpose")
@@ -86,9 +87,16 @@ def validate(data):
         fields(contestant, "model_revision_sha256 quantization", "contestant")
         require(digest(contestant["model_revision_sha256"]), "invalid model revision hash")
         require(identifier(contestant["quantization"]), "invalid quantization")
-    require(isinstance(data["attempts"], list), "attempts must be an array")
     expected_count = len(data["tasks"]) * len(data["contestants"]) * data["repetitions"]
     require(expected_count <= 100_000, "attempt matrix exceeds 100000 cells")
+    return data
+
+
+def validate(data):
+    fields(data, "schema_version purpose protocol tasks contestants repetitions attempts", "result")
+    validate_plan({k: v for k, v in data.items() if k != "attempts"})
+    require(isinstance(data["attempts"], list), "attempts must be an array")
+    expected_count = len(data["tasks"]) * len(data["contestants"]) * data["repetitions"]
     require(len(data["attempts"]) == expected_count, "incomplete or extra attempt matrix")
     seen = set()
     for attempt in data["attempts"]:
