@@ -20,7 +20,8 @@ environment, and checks its remote digest even when installation is skipped.
 `skip_install` requires the exact executable already baked into the task image.
 The environment must provide Python 3.11+, POSIX shell, sha256sum, cut, the binary's
 shared libraries, and writable `/installed-agent` and `/logs/agent` locations.
-The task's agent worktree must be `/workspace`.
+The adapter uses the task's declared working directory, or detects the image
+working directory with `pwd`. An explicit absolute `workspace` kwarg can override it.
 
 Configure the following kwargs using a private Harbor job file (real booleans,
 not string values):
@@ -74,6 +75,12 @@ Docker socket, task solutions, other attempts or verifier inputs to the agent.
 `--yolo` permits task mutations inside that environment; Keel's own sandbox stays
 enabled. MCP servers, skills injection, resume and native configuration overrides
 are unsupported and must not be silently injected into comparisons.
+
+The supplied task images use a digest-pinned Debian trixie Python base, which
+supports the GLIBC 2.39 required by the inspected native Keel executable. The
+previous bookworm base had GLIBC 2.36 and could pass grader-only controls while
+failing to launch that executable. Other private binaries still need compatible
+image libraries or a compatible build.
 
 ## Evidence and verification status
 

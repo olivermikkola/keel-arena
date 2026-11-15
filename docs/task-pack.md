@@ -74,3 +74,11 @@ missing and the isolated Docker configuration initially lacked Compose. Those
 failed artifacts were preserved. Final controls used a checksum-verified,
 task-local Buildx 0.39.0 and the existing Compose 5.5.0 plugin, without modifying
 the Docker service or system configuration. All trial containers stopped afterward.
+
+The initial four controls above used the original bookworm image. The frozen-study
+integration exposed its incompatibility with a GLIBC 2.39 Keel executable; the
+current manifest instead pins the trixie base. A real Keel/Harbor scripted-provider
+repair passed all 23 config checks on that base. A second trial was preserved as
+a thermal cancellation, and the matched block was correctly excluded on resume.
+This is integration evidence, not a real-model result or a replacement for the
+full frozen control matrix on each new benchmark environment.

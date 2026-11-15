@@ -23,8 +23,9 @@ This does not claim that container isolation or model quality has been verified.
 
 ## Remaining end-to-end work
 
-1. Produce a frozen private study manifest and exact trial bindings through a
-   convenient Arena command, using the established Harbor execution engine.
+1. Verify the new frozen-study command across complete live model comparisons.
+   It now produces exact private bindings, serial runs, safe resume and thermal stops
+   using Harbor; no handwritten result matrix is needed.
 2. Preserve validated interchangeable trajectories alongside native evidence.
 3. Run a small matched real-model comparison with repetitions and thermal/resource
    guards. Report task coverage, failures, usage and complementary solves.
