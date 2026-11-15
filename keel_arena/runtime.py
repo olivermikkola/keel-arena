@@ -256,6 +256,8 @@ def run(config):
                 'policy': {k: config[k] for k in ('max_model_requests', 'max_output_tokens', 'temperature', 'top_p', 'seed', 'thinking', 'context_tokens', 'timeout_seconds')},
                 'transport': 'nonstreaming-upstream-sse-envelope'}
     (logs / 'runtime.json').write_text(json.dumps(metadata, indent=2) + '\n')
+    if status == 'timeout':
+        return 124
     return code if status == 'completed' else (code or 1)
 
 
