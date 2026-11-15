@@ -70,6 +70,10 @@ A private consumer can use the versioned result contract to locate verified
 training-split trajectories in its own artifact store. Arena does not automatically
 turn failures into preference pairs or export evaluation tasks into training.
 
+The [original repair task pack](docs/task-pack.md) provides two development
+diagnostics with separate verifiers, broken/fixed controls and 43 grading cases.
+These public tasks are not a blind holdout.
+
 The [competitive research](docs/competitive-research.md) records the mechanisms
 selected from Harbor, SWE-bench, Inspect and Aider.
 
