@@ -11,7 +11,7 @@ if version('harbor') != '0.26.0':
 
 from harbor.agents.agent_auth_resolution import ModelConnectionSpec, ProviderAccess
 from harbor.agents.capabilities import AgentCapabilities
-from harbor.agents.installed.base import ApiError, BaseInstalledAgent, NonZeroAgentExitCodeError, with_prompt_template
+from harbor.agents.installed.base import ApiError, BaseInstalledAgent, ContextWindowExceededError, NonZeroAgentExitCodeError, with_prompt_template
 from harbor.models.model_api_format import ModelApiFormat
 
 from .runtime import validate_config
@@ -108,6 +108,8 @@ class KeelAgent(BaseInstalledAgent):
             raise RuntimeError('runtime evidence unavailable')
         metadata = json.loads(result.stdout)
         status = metadata.get('status')
+        if status == 'context_exhausted':
+            raise ContextWindowExceededError('Arena provider reported context budget exhaustion')
         if status == 'provider_error':
             raise ApiError('Arena provider failure; private evidence retained')
         if status == 'timeout':

@@ -72,7 +72,7 @@ def run(config):
     logs.mkdir(parents=True, exist_ok=False, mode=0o700)
     home = Path(config['home'])
     home.mkdir(parents=True, exist_ok=False, mode=0o700)
-    state = {'requests': 0, 'input_tokens': 0, 'output_tokens': 0,
+    state = {'requests': 0, 'responses': 0, 'input_tokens': 0, 'output_tokens': 0,
              'usage_complete': True, 'failure': None}
     lock = threading.Lock()
     deadline = time.monotonic() + config['timeout_seconds']
@@ -93,6 +93,7 @@ def run(config):
             self.wfile.write(payload)
 
         def do_POST(self):
+            index = None
             try:
                 if self.path != '/v1/chat/completions':
                     self.respond(404, b'{}')
@@ -118,6 +119,7 @@ def run(config):
                     body['chat_template_kwargs'] = {'enable_thinking': config['thinking']}
                 body.pop('max_completion_tokens', None)
                 body.pop('stream_options', None)
+                (logs / f'request-{index}.json').write_text(json.dumps(body) + '\n')
                 headers = {'Content-Type': 'application/json'}
                 if api_key:
                     headers['Authorization'] = 'Bearer ' + api_key
@@ -154,12 +156,43 @@ def run(config):
                 chunk = {'id': answer.get('id', f'arena-{index}'), 'object': 'chat.completion.chunk',
                          'choices': [{'index': 0, 'delta': delta, 'finish_reason': choice.get('finish_reason')}]}
                 payload = ('data: ' + json.dumps(chunk) + '\n\ndata: [DONE]\n\n').encode()
+                with lock:
+                    state['responses'] += 1
                 self.respond(200, payload, event=True)
-            except (OSError, ValueError, KeyError, TypeError, TimeoutError):
+            except (OSError, ValueError, KeyError, TypeError, AttributeError, TimeoutError) as error:
+                failure = 'provider_error'
+                evidence = {'exception_type': type(error).__name__}
+                if isinstance(error, urllib.error.HTTPError):
+                    evidence['http_status'] = error.code
+                    try:
+                        raw = error.read(65537)
+                    except OSError as body_error:
+                        evidence['body_read_error'] = type(body_error).__name__
+                        raw = b''
+                    text = raw[:65536].decode('utf-8', errors='replace')
+                    if api_key:
+                        text = text.replace(api_key, '[REDACTED]')
+                    evidence['body'] = text
+                    evidence['body_truncated'] = len(raw) > 65536
+                    try:
+                        detail = json.loads(text).get('error', {})
+                        # Typed protocol codes only: do not classify from prose
+                        # that could contain model output or task instructions.
+                        if isinstance(detail, dict) and (
+                            detail.get('code') in ('context_length_exceeded', 'context_window_exceeded')
+                            or detail.get('type') == 'exceed_context_size_error'
+                        ):
+                            failure = 'context_exhausted'
+                    except (ValueError, AttributeError):
+                        pass
+                if time.monotonic() >= deadline:
+                    failure = 'timeout'
+                if index is not None:
+                    (logs / f'error-{index}.json').write_text(json.dumps(evidence) + '\n')
                 with lock:
                     state['usage_complete'] = False
                     if state['failure'] is None:
-                        state['failure'] = 'provider_error'
+                        state['failure'] = failure
                 try:
                     self.respond(502, b'{"error":{"message":"arena upstream request failed"}}')
                 except OSError:
@@ -213,7 +246,7 @@ def run(config):
         worker.join(timeout=1)
         for signum, handler in previous.items():
             signal.signal(signum, handler)
-    if state['requests'] == 0:
+    if state['requests'] == 0 or state['requests'] != state['responses']:
         state['usage_complete'] = False
     if not state['usage_complete']:
         state['input_tokens'] = state['output_tokens'] = None
@@ -223,6 +256,8 @@ def run(config):
                 'policy': {k: config[k] for k in ('max_model_requests', 'max_output_tokens', 'temperature', 'top_p', 'seed', 'thinking', 'context_tokens', 'timeout_seconds')},
                 'transport': 'nonstreaming-upstream-sse-envelope'}
     (logs / 'runtime.json').write_text(json.dumps(metadata, indent=2) + '\n')
+    if status == 'timeout':
+        return 124
     return code if status == 'completed' else (code or 1)
 
 
