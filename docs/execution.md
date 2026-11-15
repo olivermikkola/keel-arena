@@ -2,15 +2,16 @@
 
 ## Decision: use an established sandbox backend
 
-The initial implementation validates and compares already-normalized results.
-It does not contain a host-shell task runner. That keeps unsafe task execution
-and provider credentials out of the first public release.
+Arena validates/imports backend results and supplies a Keel installed-agent adapter.
+Harbor owns task environments, scheduling and verification. A small wrapper inside
+the task sandbox enforces request/output budgets and records provider evidence.
+See [adapter usage and its evidence limits](keel-agent.md).
 
 Harbor is the first backend to integrate. Its documentation recommends an
 installed-agent adapter when the agent CLI belongs inside the task environment.
-This is the intended shape for Keel, pending a pinned dependency and real execution
-proof. See [Harbor's custom-agent interface](https://docs.harborframework.com/agents/custom-agents).
-This is an architectural choice, not a claim of a tested integration.
+The SDK dependency is pinned and contract-tested; the wrapper has a real Keel
+scripted-provider execution proof. A full backend/model benchmark remains to run. See [Harbor's custom-agent interface](https://docs.harborframework.com/agents/custom-agents).
+This does not claim that container isolation or model quality has been verified.
 
 ## Next milestones
 

@@ -13,7 +13,9 @@ time, known token usage, and complementary successes between models.
 
 It also [imports Harbor 0.26.0 trial evidence](docs/harbor-import.md), checking
 explicit bindings and protected reward artifacts before normalizing results.
-It does **not yet launch Keel, provision sandboxes, or train models**. No real-model leaderboard or model improvement is claimed. The included
+The [Harbor Keel adapter](docs/keel-agent.md) launches a pinned private executable
+inside a backend task environment, with a bounded provider wrapper and private
+request/response evidence. Arena does not provision its own sandbox or train models. No real-model leaderboard or model improvement is claimed. The included
 fixture is entirely synthetic and tests reporting behavior only.
 
 ## Try it
@@ -51,8 +53,8 @@ python3 -m keel_arena validate "$ARENA_RESULT_FILE"
 python3 -m keel_arena report "$ARENA_RESULT_FILE" > "$ARENA_REPORT_FILE"
 ```
 
-The CLI reads one file and writes to stdout. It executes no commands from input,
-loads no plugins, calls no providers and uploads nothing. Reports remain private
+The reporting/import CLI reads local files and writes to stdout. It executes no commands from result input, loads no plugins, calls no providers
+and uploads nothing. Explicit execution through Harbor is a separate opt-in path. Reports remain private
 until you deliberately share them. They retain contestant identifiers and hashes,
 which can themselves be sensitive. There is no automatic public leaderboard.
 
