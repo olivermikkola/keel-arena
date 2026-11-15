@@ -166,3 +166,12 @@ class HarborImportTest(unittest.TestCase):
         row = import_trials(self.manifest, self.root)['attempts'][0]
         self.assertEqual(row['outcome'], 'solved')
         self.assertIsNone(row['trajectory_sha256'])
+
+    def test_failed_trace_conversion_does_not_read_a_stale_symlink(self):
+        directory = self.root / 'trial-0/agent'
+        directory.mkdir()
+        (directory / 'trajectory.json').symlink_to(self.root / 'missing-private-target')
+        self.change_trial(lambda t: t.update(agent_result={'metadata': {'arena_trace_export_error': 'ValueError'}}))
+        row = import_trials(self.manifest, self.root)['attempts'][0]
+        self.assertEqual(row['outcome'], 'solved')
+        self.assertIsNone(row['trajectory_sha256'])

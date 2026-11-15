@@ -159,13 +159,12 @@ def import_binding(binding, root, metric):
     outcome, verifier_hash = _outcome(trial, root, directory, metric)
     if verifier_hash is not None:
         verifier_hash = hashlib.sha256(trial_bytes).hexdigest()
-    trajectory = read_bytes(root, f"{directory}/agent/trajectory.json", optional=True)
     usage = trial.get("agent_result") or {}
     require(isinstance(usage, dict), "invalid usage object")
     metadata = usage.get("metadata") or {}
     require(isinstance(metadata, dict), "invalid usage metadata")
-    if metadata.get("arena_trace_export_error"):
-        trajectory = None
+    trajectory = None if metadata.get("arena_trace_export_error") else read_bytes(
+        root, f"{directory}/agent/trajectory.json", optional=True)
     return {
         "task": binding["task"], "contestant": binding["contestant"],
         "repetition": binding["repetition"], "outcome": outcome, "wall_seconds": wall,
