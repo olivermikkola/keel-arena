@@ -22,6 +22,7 @@ class RuntimeTest(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.requests = []
         self.provider_error = None
+        self.provider_delay = 0
         owner = self
         requests = self.requests
 
@@ -32,12 +33,18 @@ class RuntimeTest(unittest.TestCase):
             def do_POST(self):
                 body = json.loads(self.rfile.read(int(self.headers['Content-Length'])))
                 requests.append((body, self.headers.get('Authorization')))
+                if owner.provider_delay:
+                    import time
+                    time.sleep(owner.provider_delay)
                 if owner.provider_error is not None:
                     payload = json.dumps(owner.provider_error).encode()
                     self.send_response(400)
                     self.send_header('Content-Length', str(len(payload)))
                     self.end_headers()
+                    try:
                     self.wfile.write(payload)
+                except BrokenPipeError:
+                    pass
                     return
                 answer = {'choices': [{'message': {'role': 'assistant', 'content': 'done'},
                                        'finish_reason': 'stop'}],
@@ -46,7 +53,10 @@ class RuntimeTest(unittest.TestCase):
                 self.send_response(200)
                 self.send_header('Content-Length', str(len(payload)))
                 self.end_headers()
-                self.wfile.write(payload)
+                try:
+                    self.wfile.write(payload)
+                except BrokenPipeError:
+                    pass
         self.server = ThreadingHTTPServer(('127.0.0.1', 0), Provider)
         thread = threading.Thread(target=self.server.serve_forever, kwargs={'poll_interval': .01})
         thread.start()
@@ -153,3 +163,13 @@ except Exception:
         evidence = json.loads((self.root / 'logs/error-1.json').read_text())
         self.assertTrue(evidence['body_truncated'])
         self.assertLessEqual(len(evidence['body'].encode()), 65536)
+
+    def test_inflight_timeout_does_not_claim_zero_token_usage(self):
+        self.provider_delay = 2
+        result = self.launch(self.REQUEST, timeout_seconds=1)
+        self.assertEqual(result.returncode, 124)
+        self.assertEqual(len(self.requests), 1)
+        self.assertEqual(self.metadata['requests'], 1)
+        self.assertEqual(self.metadata['responses'], 0)
+        self.assertIsNone(self.metadata['input_tokens'])
+        self.assertIsNone(self.metadata['output_tokens'])

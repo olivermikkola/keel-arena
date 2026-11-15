@@ -66,7 +66,8 @@ counts, observed usage and termination reason. Each accepted request is saved
 before the provider call, including requests that later fail. A failed call also
 gets bounded private error evidence (HTTP status, exception type, up to 64 KiB
 of error body). The configured API credential is redacted from that body;
-headers and credentials are never recorded. Typed context-window errors are
+request headers are never recorded. In-flight calls without a completed response
+leave token usage unknown, including after a wall timeout. Typed context-window errors are
 graded as agent outcomes; arbitrary error prose cannot change classification. No completion usage means unknown,
 not zero. An agent that catches a rejected over-budget request and exits zero is
 still a failed budget outcome. Wall timeout kills its process group. External

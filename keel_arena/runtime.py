@@ -72,7 +72,7 @@ def run(config):
     logs.mkdir(parents=True, exist_ok=False, mode=0o700)
     home = Path(config['home'])
     home.mkdir(parents=True, exist_ok=False, mode=0o700)
-    state = {'requests': 0, 'input_tokens': 0, 'output_tokens': 0,
+    state = {'requests': 0, 'responses': 0, 'input_tokens': 0, 'output_tokens': 0,
              'usage_complete': True, 'failure': None}
     lock = threading.Lock()
     deadline = time.monotonic() + config['timeout_seconds']
@@ -156,13 +156,19 @@ def run(config):
                 chunk = {'id': answer.get('id', f'arena-{index}'), 'object': 'chat.completion.chunk',
                          'choices': [{'index': 0, 'delta': delta, 'finish_reason': choice.get('finish_reason')}]}
                 payload = ('data: ' + json.dumps(chunk) + '\n\ndata: [DONE]\n\n').encode()
+                with lock:
+                    state['responses'] += 1
                 self.respond(200, payload, event=True)
-            except (OSError, ValueError, KeyError, TypeError, TimeoutError) as error:
+            except (OSError, ValueError, KeyError, TypeError, AttributeError, TimeoutError) as error:
                 failure = 'provider_error'
                 evidence = {'exception_type': type(error).__name__}
                 if isinstance(error, urllib.error.HTTPError):
                     evidence['http_status'] = error.code
-                    raw = error.read(65537)
+                    try:
+                        raw = error.read(65537)
+                    except OSError as body_error:
+                        evidence['body_read_error'] = type(body_error).__name__
+                        raw = b''
                     text = raw[:65536].decode('utf-8', errors='replace')
                     if api_key:
                         text = text.replace(api_key, '[REDACTED]')
@@ -240,7 +246,7 @@ def run(config):
         worker.join(timeout=1)
         for signum, handler in previous.items():
             signal.signal(signum, handler)
-    if state['requests'] == 0:
+    if state['requests'] == 0 or state['requests'] != state['responses']:
         state['usage_complete'] = False
     if not state['usage_complete']:
         state['input_tokens'] = state['output_tokens'] = None
