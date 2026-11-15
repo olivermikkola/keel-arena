@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "purpose": "benchmark",
+  "split": "development",
+  "binary_path": "/path/to/your/keel",
+  "binary_sha256": "REPLACE_WITH_EXECUTABLE_SHA256",
+  "tasks": {
+    "config-check": "tasks/repair/config-check",
+    "csv-total": "tasks/repair/csv-total"
+  },
+  "contestants": {
+    "candidate": {
+      "model": "openai/your-model-id",
+      "base_url": "https://provider.example/v1",
+      "model_revision_sha256": "REPLACE_WITH_IMMUTABLE_MODEL_MANIFEST_SHA256",
+      "quantization": "none",
+      "api_key_env": "ARENA_CANDIDATE_KEY"
+    }
+  },
+  "repetitions": 2,
+  "budget": {"max_steps": 12, "max_output_tokens": 4096, "timeout_seconds": 300},
+  "sampling": {"temperature": 0.0, "top_p": 1.0, "seed": 0, "thinking": null, "context_tokens": 16384},
+  "environment": {"type": "docker", "allow_agent_hosts": ["provider.example"]},
+  "thermal_limit_c": 65
+}

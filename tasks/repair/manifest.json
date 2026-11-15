@@ -6,7 +6,7 @@
   "tasks": {
     "config-check": {
       "files": {
-        "environment/Dockerfile": "2296448f372571525b2fcd9647c8113ccd0776655065882ce0e4d4b1bc170d00",
+        "environment/Dockerfile": "0ba0558504a273db5dfc2580a18defa55c9d1b964325d910d479c13b4dde3955",
         "environment/workspace/main.py": "6e7f2414f788ffa9509b0ad59afb60625fa4c294b8851910e395f325a894be3e",
         "instruction.md": "3a4f202da10873fc352e22a6a82a222147a063102c9a1c9eee2a6781ec2fc6cd",
         "solution/fixed.py": "2013987023cf40a546914005c1bfdb51c0d8ff115334d27b5ac3d017a947bc36",
@@ -15,11 +15,11 @@
         "tests/judge.py": "a815273283d5e12696407f7d2bd13451105a3bdc0644f1cabdc6c6e1f91c96b1",
         "tests/test.sh": "5c593aaf7caf9b6b048229cd2f79d56411bca44f0e014267f8ba4a29a45a6aae"
       },
-      "snapshot_sha256": "ede62e4ceed0be43670ca6bf5c33993022271548e96896d4724de3bc99da05c0"
+      "snapshot_sha256": "ad44ddde947983b486b9f6924076e7ad36c5b46a6af76f5e5589f16d9a045e27"
     },
     "csv-total": {
       "files": {
-        "environment/Dockerfile": "2296448f372571525b2fcd9647c8113ccd0776655065882ce0e4d4b1bc170d00",
+        "environment/Dockerfile": "0ba0558504a273db5dfc2580a18defa55c9d1b964325d910d479c13b4dde3955",
         "environment/workspace/main.py": "7cd4b8678dd6870b6acc316ce86b5cb20347da28db2aa80e2150957e06a635cf",
         "instruction.md": "ed601e4c95ecb8d2f95e96d7593b91d6b79b1d3335b81a36faeeb2fdb182fa9d",
         "solution/fixed.py": "060d1306a169fa92d1be5bd66c0821e1d41738ad3dea9820aba61b3e3cde4a83",
@@ -28,7 +28,7 @@
         "tests/judge.py": "29e3c35ad50d49d15efa53b381e9e9b253b7f61113e26c5d31d3b6065bdef3d7",
         "tests/test.sh": "5c593aaf7caf9b6b048229cd2f79d56411bca44f0e014267f8ba4a29a45a6aae"
       },
-      "snapshot_sha256": "91ddc22c2a5187df4d387d7f9ffbb31cc6d0ab50afb61e203d81c55c3a0919f8"
+      "snapshot_sha256": "b40db9fa688e2b6f9e987663e08472b21201970eaf1f937d8a31adffc21e18b4"
     }
   }
 }

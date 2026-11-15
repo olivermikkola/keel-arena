@@ -132,35 +132,40 @@ def import_trials(manifest, jobs_root):
     require(root.is_dir() and not root.is_symlink(), "invalid jobs root")
     output = dict(manifest["plan"], attempts=[])
     for binding in manifest["trials"]:
-        directory = binding["directory"]
-        trial_bytes = read_bytes(root, f"{directory}/result.json")
-        trial = read_json(trial_bytes)
-        require(isinstance(trial, dict) and type(trial.get("schema_version", 1)) is int
-                and trial.get("schema_version", 1) == 1,
-                "unsupported trial schema")
-        require(trial.get("finished_at") is not None, "unfinished trial")
-        require(trial.get("task_name") == binding["task"], "trial task identity mismatch")
-        require(trial.get("task_checksum") == binding["task_checksum"], "task checksum mismatch")
-        require(not trial.get("step_results"), "multi-step trials not supported")
-        config = trial.get("config")
-        require(isinstance(config, dict) and canonical_hash(config) == binding["config_sha256"],
-                "trial config differs from frozen binding")
-        require(not config.get("install_only") and not config.get("source_trial"),
-                "setup-only and regraded trials not supported")
-        require(isinstance(config.get("verifier"), dict) and
-                config["verifier"].get("disable") is False, "verifier must be enabled")
-        wall = _wall_seconds(trial)
-        outcome, verifier_hash = _outcome(trial, root, directory, manifest["reward_metric"])
-        if verifier_hash is not None:
-            verifier_hash = hashlib.sha256(trial_bytes).hexdigest()
-        trajectory = read_bytes(root, f"{directory}/agent/trajectory.json", optional=True)
-        usage = trial.get("agent_result") or {}
-        require(isinstance(usage, dict), "invalid usage object")
-        output["attempts"].append({
-            "task": binding["task"], "contestant": binding["contestant"],
-            "repetition": binding["repetition"], "outcome": outcome, "wall_seconds": wall,
-            "input_tokens": usage.get("n_input_tokens"), "output_tokens": usage.get("n_output_tokens"),
-            "trajectory_sha256": hashlib.sha256(trajectory).hexdigest() if trajectory is not None else None,
-            "verifier_result_sha256": verifier_hash,
-        })
+        output["attempts"].append(import_binding(binding, root, manifest["reward_metric"]))
     return validate(output)
+
+
+def import_binding(binding, root, metric):
+    """Validate a single already-bound attempt, also used to resume frozen studies."""
+    directory = binding["directory"]
+    trial_bytes = read_bytes(root, f"{directory}/result.json")
+    trial = read_json(trial_bytes)
+    require(isinstance(trial, dict) and type(trial.get("schema_version", 1)) is int
+            and trial.get("schema_version", 1) == 1,
+            "unsupported trial schema")
+    require(trial.get("finished_at") is not None, "unfinished trial")
+    require(trial.get("task_name") == binding["task"], "trial task identity mismatch")
+    require(trial.get("task_checksum") == binding["task_checksum"], "task checksum mismatch")
+    require(not trial.get("step_results"), "multi-step trials not supported")
+    config = trial.get("config")
+    require(isinstance(config, dict) and canonical_hash(config) == binding["config_sha256"],
+            "trial config differs from frozen binding")
+    require(not config.get("install_only") and not config.get("source_trial"),
+            "setup-only and regraded trials not supported")
+    require(isinstance(config.get("verifier"), dict) and
+            config["verifier"].get("disable") is False, "verifier must be enabled")
+    wall = _wall_seconds(trial)
+    outcome, verifier_hash = _outcome(trial, root, directory, metric)
+    if verifier_hash is not None:
+        verifier_hash = hashlib.sha256(trial_bytes).hexdigest()
+    trajectory = read_bytes(root, f"{directory}/agent/trajectory.json", optional=True)
+    usage = trial.get("agent_result") or {}
+    require(isinstance(usage, dict), "invalid usage object")
+    return {
+        "task": binding["task"], "contestant": binding["contestant"],
+        "repetition": binding["repetition"], "outcome": outcome, "wall_seconds": wall,
+        "input_tokens": usage.get("n_input_tokens"), "output_tokens": usage.get("n_output_tokens"),
+        "trajectory_sha256": hashlib.sha256(trajectory).hexdigest() if trajectory is not None else None,
+        "verifier_result_sha256": verifier_hash,
+    }

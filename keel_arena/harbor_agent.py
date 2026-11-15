@@ -35,9 +35,12 @@ class KeelAgent(BaseInstalledAgent):
 
     def __init__(self, *args, binary_path, binary_sha256, max_model_requests=12,
                  max_output_tokens=4096, context_tokens=16384, timeout_seconds=300,
-                 temperature=0.0, top_p=1.0, seed=0, thinking=None, **kwargs):
+                 temperature=0.0, top_p=1.0, seed=0, thinking=None, workspace=None, **kwargs):
         if thinking is not None and type(thinking) is not bool:
             raise ValueError('thinking must be a boolean or null in the job config')
+        self.workspace = workspace
+        if workspace is not None and (not isinstance(workspace, str) or not workspace.startswith('/')):
+            raise ValueError('workspace must be an absolute Linux path')
         self.binary_path = Path(binary_path)
         if self.binary_path.is_symlink() or not self.binary_path.is_file():
             raise ValueError('binary_path must name a regular local executable')
@@ -77,7 +80,13 @@ class KeelAgent(BaseInstalledAgent):
     @with_prompt_template
     async def run(self, instruction, environment, context):
         connection = self.model_connection
-        config = dict(self.runtime_policy, model=connection.model_id,
+        workspace = self.workspace
+        if workspace is None:
+            detected = await environment.exec(command='pwd')
+            workspace = (detected.stdout or '').strip()
+            if detected.return_code != 0 or not workspace.startswith('/'):
+                raise RuntimeError('cannot determine task workspace')
+        config = dict(self.runtime_policy, root=workspace, model=connection.model_id,
                       base_url=connection.execution_base_url,
                       logs=str(self.environment_logs_dir / 'run'))
         validate_config(config)
@@ -90,7 +99,7 @@ class KeelAgent(BaseInstalledAgent):
                 environment,
                 command='python3 /installed-agent/arena-runtime.py --config /installed-agent/arena-run.json',
                 env={**connection.env, 'ARENA_INSTRUCTION': instruction},
-                cwd='/workspace', timeout_sec=config['timeout_seconds'] + 10)
+                cwd=workspace, timeout_sec=config['timeout_seconds'] + 10)
         except NonZeroAgentExitCodeError as exc:
             error = exc
         result = await environment.exec(

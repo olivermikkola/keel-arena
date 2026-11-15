@@ -39,6 +39,14 @@ An optional local install (`python3 -m pip install .`) adds `keel-arena`. This m
 fetch the pinned build backend; running directly from the checkout needs only
 the standard library. There is no published package release yet.
 
+## Run a real study
+
+The [private study runner](docs/studies.md) freezes exact task/model/repetition
+bindings before any execution and runs them through Harbor with serial budgets,
+thermal guards, preserved evidence and verified resume. Start from
+`examples/study-template.json`; it requires your real private executable/model
+identities. No model calls or Docker builds occur merely by installing Arena.
+
 ## Use private tasks and results
 
 Keep task banks, source snapshots, model identity manifests, raw trajectories,

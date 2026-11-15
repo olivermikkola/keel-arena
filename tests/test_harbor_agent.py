@@ -41,6 +41,8 @@ class HarborAgentTest(unittest.TestCase):
 
             async def exec(self, **kwargs):
                 commands.append(kwargs)
+                if kwargs['command'] == 'pwd':
+                    return SimpleNamespace(return_code=0, stdout='/workspace\n', stderr='')
                 if kwargs['command'].startswith('cat '):
                     return SimpleNamespace(return_code=0, stdout='{"status":"completed"}', stderr='')
                 return SimpleNamespace(return_code=0, stdout='', stderr='')
@@ -58,6 +60,15 @@ class HarborAgentTest(unittest.TestCase):
         self.assertEqual(launch['env']['KEEL_API_KEY'], 'fixture-secret')
         self.assertNotIn('fixture-secret', launch['command'])
         self.assertNotIn('not-a-command', launch['command'])
+
+    def test_explicit_anonymous_selection_does_not_leak_ambient_credentials(self):
+        from unittest.mock import patch
+        with patch.dict(os.environ, {'OPENAI_API_KEY': 'unrelated-private-key'}):
+            agent = KeelAgent(logs_dir=self.root, binary_path=self.binary, binary_sha256=self.hash,
+                              model_name='openai/fixture', base_url='http://provider.example/v1',
+                              model_api_key_name='ARENA_ANONYMOUS_API_KEY',
+                              extra_env={'ARENA_ANONYMOUS_API_KEY': ''})
+            self.assertEqual(agent.model_connection.api_key, '')
 
     def test_binary_identity_and_invalid_policy_fail_before_execution(self):
         self.binary.write_bytes(b'changed')
@@ -84,6 +95,8 @@ class HarborAgentTest(unittest.TestCase):
                 default_user = None
 
                 async def exec(self, **kwargs):
+                    if kwargs['command'] == 'pwd':
+                        return SimpleNamespace(return_code=0, stdout='/workspace\n', stderr='')
                     if kwargs['command'].startswith('cat '):
                         return SimpleNamespace(return_code=0, stdout=json.dumps({'status': status}), stderr='')
                     return SimpleNamespace(return_code=1, stdout='', stderr='')
