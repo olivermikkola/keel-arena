@@ -21,6 +21,8 @@ class RuntimeTest(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.requests = []
+        self.provider_error = None
+        owner = self
         requests = self.requests
 
         class Provider(BaseHTTPRequestHandler):
@@ -30,6 +32,13 @@ class RuntimeTest(unittest.TestCase):
             def do_POST(self):
                 body = json.loads(self.rfile.read(int(self.headers['Content-Length'])))
                 requests.append((body, self.headers.get('Authorization')))
+                if owner.provider_error is not None:
+                    payload = json.dumps(owner.provider_error).encode()
+                    self.send_response(400)
+                    self.send_header('Content-Length', str(len(payload)))
+                    self.end_headers()
+                    self.wfile.write(payload)
+                    return
                 answer = {'choices': [{'message': {'role': 'assistant', 'content': 'done'},
                                        'finish_reason': 'stop'}],
                           'usage': {'prompt_tokens': 10, 'completion_tokens': 2}}
@@ -118,3 +127,29 @@ except Exception:
         self.config['thinking'] = 'false'
         with self.assertRaises(ValueError):
             validate_config(self.config)
+
+    def test_private_provider_errors_are_bounded_redacted_and_typed(self):
+        self.provider_error = {'error': {'type': 'exceed_context_size_error',
+                                         'message': 'too long; token fixture-secret'}}
+        result = self.launch(self.REQUEST)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(self.metadata['status'], 'context_exhausted')
+        self.assertIsNone(self.metadata['input_tokens'])
+        evidence = json.loads((self.root / 'logs/error-1.json').read_text())
+        self.assertEqual(evidence['http_status'], 400)
+        self.assertNotIn('fixture-secret', evidence['body'])
+        self.assertIn('[REDACTED]', evidence['body'])
+        self.assertTrue((self.root / 'logs/request-1.json').is_file())
+
+    def test_provider_prose_cannot_reclassify_an_error(self):
+        self.provider_error = {'error': {'message': 'context_length_exceeded'}}
+        result = self.launch(self.REQUEST)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(self.metadata['status'], 'provider_error')
+
+    def test_oversized_error_body_is_preserved_as_a_bounded_prefix(self):
+        self.provider_error = {'error': {'message': 'x' * 70000}}
+        self.launch(self.REQUEST)
+        evidence = json.loads((self.root / 'logs/error-1.json').read_text())
+        self.assertTrue(evidence['body_truncated'])
+        self.assertLessEqual(len(evidence['body'].encode()), 65536)

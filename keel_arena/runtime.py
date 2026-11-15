@@ -93,6 +93,7 @@ def run(config):
             self.wfile.write(payload)
 
         def do_POST(self):
+            index = None
             try:
                 if self.path != '/v1/chat/completions':
                     self.respond(404, b'{}')
@@ -118,6 +119,7 @@ def run(config):
                     body['chat_template_kwargs'] = {'enable_thinking': config['thinking']}
                 body.pop('max_completion_tokens', None)
                 body.pop('stream_options', None)
+                (logs / f'request-{index}.json').write_text(json.dumps(body) + '\n')
                 headers = {'Content-Type': 'application/json'}
                 if api_key:
                     headers['Authorization'] = 'Bearer ' + api_key
@@ -155,11 +157,36 @@ def run(config):
                          'choices': [{'index': 0, 'delta': delta, 'finish_reason': choice.get('finish_reason')}]}
                 payload = ('data: ' + json.dumps(chunk) + '\n\ndata: [DONE]\n\n').encode()
                 self.respond(200, payload, event=True)
-            except (OSError, ValueError, KeyError, TypeError, TimeoutError):
+            except (OSError, ValueError, KeyError, TypeError, TimeoutError) as error:
+                failure = 'provider_error'
+                evidence = {'exception_type': type(error).__name__}
+                if isinstance(error, urllib.error.HTTPError):
+                    evidence['http_status'] = error.code
+                    raw = error.read(65537)
+                    text = raw[:65536].decode('utf-8', errors='replace')
+                    if api_key:
+                        text = text.replace(api_key, '[REDACTED]')
+                    evidence['body'] = text
+                    evidence['body_truncated'] = len(raw) > 65536
+                    try:
+                        detail = json.loads(text).get('error', {})
+                        # Typed protocol codes only: do not classify from prose
+                        # that could contain model output or task instructions.
+                        if isinstance(detail, dict) and (
+                            detail.get('code') in ('context_length_exceeded', 'context_window_exceeded')
+                            or detail.get('type') == 'exceed_context_size_error'
+                        ):
+                            failure = 'context_exhausted'
+                    except (ValueError, AttributeError):
+                        pass
+                if time.monotonic() >= deadline:
+                    failure = 'timeout'
+                if index is not None:
+                    (logs / f'error-{index}.json').write_text(json.dumps(evidence) + '\n')
                 with lock:
                     state['usage_complete'] = False
                     if state['failure'] is None:
-                        state['failure'] = 'provider_error'
+                        state['failure'] = failure
                 try:
                     self.respond(502, b'{"error":{"message":"arena upstream request failed"}}')
                 except OSError:
