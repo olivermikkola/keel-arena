@@ -42,9 +42,9 @@ class RuntimeTest(unittest.TestCase):
                     self.send_header('Content-Length', str(len(payload)))
                     self.end_headers()
                     try:
-                    self.wfile.write(payload)
-                except BrokenPipeError:
-                    pass
+                        self.wfile.write(payload)
+                    except BrokenPipeError:
+                        pass
                     return
                 answer = {'choices': [{'message': {'role': 'assistant', 'content': 'done'},
                                        'finish_reason': 'stop'}],
