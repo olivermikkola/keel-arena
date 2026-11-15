@@ -8,6 +8,13 @@ from pathlib import Path, PurePosixPath
 from .results import _object, digest, fields, finite, identifier, integer, require, validate, validate_plan
 
 HARBOR_VERSION = "0.26.0"
+# Reviewed against Harbor 0.26.0 error_policy.py. These are model/agent
+# outcomes, not grounds for removing a difficult task from a comparison.
+GRADED_AGENT_ERRORS = {
+    "NonZeroAgentExitCodeError", "ContextWindowExceededError", "OutputTokenExceededError",
+    "ContextLengthExceededError", "OutputLengthExceededError", "AgentSafetyRefusalError",
+    "ContentPolicyViolationError",
+}
 
 
 def canonical_hash(value):
@@ -94,7 +101,10 @@ def _outcome(trial, root, directory, metric):
         # Fail closed on unknown failures. Do not interpret backend-specific
         # serialized policy overrides as permission to count a reward.
         kind = exception["exception_type"]
-        return ("timeout" if kind == "AgentTimeoutError" else "infrastructure_error"), None
+        if kind == "AgentTimeoutError":
+            return "timeout", None
+        if kind not in GRADED_AGENT_ERRORS:
+            return "infrastructure_error", None
     require(trial.get("reward_valid") is True, "trial has no valid verifier reward")
     verifier = trial.get("verifier_result")
     require(isinstance(verifier, dict) and isinstance(verifier.get("rewards"), dict),

@@ -35,7 +35,9 @@ traversal, symlinks, unknown/reused cells, mismatched configs/tasks, unfinished
 trials, missing or inconsistent rewards, and nonbinary/multiple reward metrics.
 It never follows paths or URIs from backend JSON. Each file is limited to 16 MiB.
 
-`AgentTimeoutError` becomes `timeout`; other exceptions become
+`AgentTimeoutError` becomes `timeout`. Known agent failures (nonzero agent exit,
+context/output exhaustion and refusals) retain their protected grading outcome,
+following the reviewed Harbor 0.26.0 error table. Other exceptions become
 `infrastructure_error`, even if the result also carries a passing reward. This
 conservative policy may exclude valid model failures for an unknown exception;
 add an explicit reviewed classification when integrating another backend error.

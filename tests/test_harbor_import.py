@@ -109,6 +109,15 @@ class HarborImportTest(unittest.TestCase):
             output = import_trials(self.manifest, self.root)
             self.assertEqual(output['attempts'][0]['outcome'], expected)
 
+    def test_known_agent_failures_are_graded_not_excluded(self):
+        self.change_trial(lambda t: t.update(
+            exception_info={'exception_type': 'ContextWindowExceededError'},
+            verifier_result={'rewards': {'reward': 0}}))
+        (self.root / 'trial-0/verifier/reward.txt').write_text('0')
+        result = import_trials(self.manifest, self.root)
+        self.assertEqual(result['attempts'][0]['outcome'], 'unsolved')
+        self.assertEqual(summarize(result)['matched_blocks'], 2)
+
     def test_paths_symlinks_duplicate_bindings_and_unknown_version_refused(self):
         for mutate in (lambda m: m['trials'][0].update(directory='../outside'),
                        lambda m: m['trials'][0].update(directory='/outside'),
