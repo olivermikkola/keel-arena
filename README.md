@@ -10,6 +10,8 @@ measure completed tasks, and preserve the evidence behind every result.
 Version 0.1 provides a dependency-free Python CLI for validating normalized results
 and comparing complete, matched task/repetition blocks. It reports solve rates,
 time, known token usage, and complementary successes between models.
+[Task-level reports](docs/metrics.md) add equal task weights, explicit pass@k
+cohorts and a readable `report --format markdown` view.
 
 It also [imports Harbor 0.26.0 trial evidence](docs/harbor-import.md), checking
 explicit bindings and protected reward artifacts before normalizing results.

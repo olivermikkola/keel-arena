@@ -15,6 +15,8 @@ def main(argv=None):
     parser.add_argument("--jobs-root", help="local Harbor jobs directory for import-harbor")
     parser.add_argument("--out", help="new private directory for freeze-study")
     parser.add_argument("--resume", action="store_true", help="resume verified cells in run-study")
+    parser.add_argument("--pass-k", default="1,2,4,8", help="comma-separated k values for report")
+    parser.add_argument("--format", choices=("json", "markdown"), default="json", help="report output format")
     args = parser.parse_args(argv)
     if args.command == "import-harbor" and not args.jobs_root:
         parser.error("import-harbor requires --jobs-root")
@@ -40,14 +42,18 @@ def main(argv=None):
             result = import_trials(read_json(raw), args.jobs_root)
         else:
             data = load(args.result)
-            result = summarize(data) if args.command == "report" else {
+            result = summarize(data, pass_k=[int(k) for k in args.pass_k.split(",")]) if args.command == "report" else {
                 "valid": True, "purpose": data["purpose"], "attempts": len(data["attempts"])
             }
     except Exception as error:
         # Inputs can contain private data: do not echo values or file paths.
         print(f"keel-arena: invalid or unreadable result ({type(error).__name__})", file=sys.stderr)
         return 2
-    print(json.dumps(result, indent=2, sort_keys=True, allow_nan=False))
+    if args.command == "report" and args.format == "markdown":
+        from .reporting import markdown
+        print(markdown(result), end="")
+    else:
+        print(json.dumps(result, indent=2, sort_keys=True, allow_nan=False))
     return 3 if args.command == "run-study" and result.get("status") == "thermal_stop" else 0
 
 
