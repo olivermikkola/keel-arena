@@ -74,6 +74,9 @@ which can themselves be sensitive. There is no automatic public leaderboard.
 | Keel Arena | Evaluation protocol, normalized evidence and comparisons |
 | LLM-lab or another private consumer | Training-data selection, post-training and model artifacts |
 
+The adapter also produces [validated private ATIF timelines](docs/trajectories.md),
+with exact native-request references and no invented tool observations.
+
 A private consumer can use the versioned result contract to locate verified
 training-split trajectories in its own artifact store. Arena does not automatically
 turn failures into preference pairs or export evaluation tasks into training.

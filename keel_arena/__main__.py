@@ -10,7 +10,7 @@ from .harbor_import import import_trials, read_json
 
 def main(argv=None):
     parser = argparse.ArgumentParser(prog="keel-arena")
-    parser.add_argument("command", choices=("validate", "report", "import-harbor", "freeze-study", "run-study"))
+    parser.add_argument("command", choices=("validate", "report", "import-harbor", "freeze-study", "run-study", "export-trace"))
     parser.add_argument("result", help="path to a normalized v1 result JSON file")
     parser.add_argument("--jobs-root", help="local Harbor jobs directory for import-harbor")
     parser.add_argument("--out", help="new private directory for freeze-study")
@@ -18,10 +18,13 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if args.command == "import-harbor" and not args.jobs_root:
         parser.error("import-harbor requires --jobs-root")
-    if args.command == "freeze-study" and not args.out:
-        parser.error("freeze-study requires --out")
+    if args.command in ("freeze-study", "export-trace") and not args.out:
+        parser.error("this command requires --out")
     try:
-        if args.command == "freeze-study":
+        if args.command == "export-trace":
+            from .trajectories import export_trajectory
+            result = export_trajectory(args.result, args.out)
+        elif args.command == "freeze-study":
             from .study import freeze, read_document
             result = freeze(read_document(args.result), args.out)
         elif args.command == "run-study":
