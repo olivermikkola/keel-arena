@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "purpose": "demonstration",
+  "protocol": {
+    "harness_revision": "55ae38bb5f2fe51359774c8501e8540ac573d21d04536742a7c75222f64d7a1c",
+    "environment_sha256": "01d64f3716b528ff5dc044bd616758f8ea92d96fcdbde2120185afccc6a73e71",
+    "sampling_sha256": "3c2bd3666e96ef3fba16de6d098b406946698b4961aaf2db2e4f250d4c29f345",
+    "budget": {
+      "max_steps": 12,
+      "max_output_tokens": 4096,
+      "timeout_seconds": 300
+    }
+  },
+  "tasks": {
+    "toy-repair": {
+      "snapshot_sha256": "31fd925c2afae92176cfa7200366990c6bdffd600579ccc96d7ea2091ee38663",
+      "verifier_sha256": "ac8b7a210a5202580489d2d67b7ff71f13d02785d26ee115002ccc0c91f985ea",
+      "split": "development"
+    },
+    "toy-git": {
+      "snapshot_sha256": "df5b288fc09dc051d973a36c2d8fa4b3747c89d9645ba6947e62321219cc607f",
+      "verifier_sha256": "f5f1bd205591049d9b5339e7f0fe02203d980e830c610c977bcaae8a0e58c48a",
+      "split": "development"
+    },
+    "toy-edit": {
+      "snapshot_sha256": "1363a0c7e1a324bad4c8901fc5b3fff192a1c3730f4d03afb2f217765f602318",
+      "verifier_sha256": "581a8d9a3b57bd55fe2fb5e7f987b5b228157356d69ae860f388e57dff72b856",
+      "split": "development"
+    }
+  },
+  "contestants": {
+    "demo-a": {
+      "model_revision_sha256": "7300d2df8b84c630a1885d88357f86660a1cc3c1d2ce706fe2f968906c19e21b",
+      "quantization": "none"
+    },
+    "demo-b": {
+      "model_revision_sha256": "84ee2c2a2ae5148a3362daa7e6f3936e6433895fa76cea0c3c5fe1b7a8a37d63",
+      "quantization": "none"
+    }
+  },
+  "repetitions": 1,
+  "attempts": [
+    {
+      "task": "toy-repair",
+      "contestant": "demo-a",
+      "repetition": 0,
+      "outcome": "solved",
+      "wall_seconds": 10,
+      "input_tokens": null,
+      "output_tokens": null,
+      "trajectory_sha256": null,
+      "verifier_result_sha256": "897812f397344f5e3be5b9af41a438dc056d478970ebcf8e5f4a8dc3c98100e4"
+    },
+    {
+      "task": "toy-repair",
+      "contestant": "demo-b",
+      "repetition": 0,
+      "outcome": "unsolved",
+      "wall_seconds": 10,
+      "input_tokens": null,
+      "output_tokens": null,
+      "trajectory_sha256": null,
+      "verifier_result_sha256": "242b556b48ad06a97cdd73bda8d17a72c2ce6b712c94bb453c56b2d3db89d80a"
+    },
+    {
+      "task": "toy-git",
+      "contestant": "demo-a",
+      "repetition": 0,
+      "outcome": "unsolved",
+      "wall_seconds": 10,
+      "input_tokens": null,
+      "output_tokens": null,
+      "trajectory_sha256": null,
+      "verifier_result_sha256": "3f0603c38a69b29ceb5bbd9cc682a9998c4e28467e034db4a2f35f6fa7119c4c"
+    },
+    {
+      "task": "toy-git",
+      "contestant": "demo-b",
+      "repetition": 0,
+      "outcome": "solved",
+      "wall_seconds": 10,
+      "input_tokens": null,
+      "output_tokens": null,
+      "trajectory_sha256": null,
+      "verifier_result_sha256": "b09a3d66640c7e2fdc18bbadd86781ca33a91e34e544e9ee1ce91b72c93d1efc"
+    },
+    {
+      "task": "toy-edit",
+      "contestant": "demo-a",
+      "repetition": 0,
+      "outcome": "infrastructure_error",
+      "wall_seconds": 10,
+      "input_tokens": null,
+      "output_tokens": null,
+      "trajectory_sha256": null,
+      "verifier_result_sha256": null
+    },
+    {
+      "task": "toy-edit",
+      "contestant": "demo-b",
+      "repetition": 0,
+      "outcome": "solved",
+      "wall_seconds": 10,
+      "input_tokens": null,
+      "output_tokens": null,
+      "trajectory_sha256": null,
+      "verifier_result_sha256": "1059f9540c3278ee6dcdd98ad7a8d97bf4d0b9f267f8ef205681fd5e18af8871"
+    }
+  ]
+}
