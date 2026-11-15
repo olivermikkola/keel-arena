@@ -157,3 +157,12 @@ class HarborImportTest(unittest.TestCase):
         (self.root / 'trial-0/result.json').write_text(json.dumps(raw))
         self.manifest['trials'][0]['config_sha256'] = canonical_hash(raw['config'])
         self.assertEqual(import_trials(self.manifest, self.root)['attempts'][0]['outcome'], 'solved')
+
+    def test_failed_trace_conversion_never_attaches_a_stale_trace_or_changes_solve(self):
+        directory = self.root / 'trial-0/agent'
+        directory.mkdir()
+        (directory / 'trajectory.json').write_text('{"stale": true}')
+        self.change_trial(lambda t: t.update(agent_result={'metadata': {'arena_trace_export_error': 'ValueError'}}))
+        row = import_trials(self.manifest, self.root)['attempts'][0]
+        self.assertEqual(row['outcome'], 'solved')
+        self.assertIsNone(row['trajectory_sha256'])

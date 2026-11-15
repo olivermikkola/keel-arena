@@ -162,6 +162,10 @@ def import_binding(binding, root, metric):
     trajectory = read_bytes(root, f"{directory}/agent/trajectory.json", optional=True)
     usage = trial.get("agent_result") or {}
     require(isinstance(usage, dict), "invalid usage object")
+    metadata = usage.get("metadata") or {}
+    require(isinstance(metadata, dict), "invalid usage metadata")
+    if metadata.get("arena_trace_export_error"):
+        trajectory = None
     return {
         "task": binding["task"], "contestant": binding["contestant"],
         "repetition": binding["repetition"], "outcome": outcome, "wall_seconds": wall,

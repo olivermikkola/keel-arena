@@ -22,7 +22,7 @@ class AgentTimeoutError(TimeoutError):
 
 
 class KeelAgent(BaseInstalledAgent):
-    capabilities = AgentCapabilities(base_url=True)
+    capabilities = AgentCapabilities(base_url=True, atif=True)
     MODEL_CONNECTION = ModelConnectionSpec(
         default_provider='openai',
         agent_provider_access=ProviderAccess(api_key_candidate_names=['KEEL_API_KEY', 'OPENAI_API_KEY'],
@@ -136,3 +136,11 @@ class KeelAgent(BaseInstalledAgent):
         context.n_input_tokens = data.get('input_tokens')
         context.n_output_tokens = data.get('output_tokens')
         context.metadata = {**(context.metadata or {}), 'arena_runtime': data}
+        from .trajectories import export_trajectory
+        try:
+            exported = export_trajectory(self.logs_dir, self.logs_dir / 'trajectory.json')
+            context.metadata['arena_trace'] = exported
+        except Exception as error:
+            # Trace-format failure must not turn a verified solve into an
+            # infrastructure failure. Preserve native data and mark no export.
+            context.metadata['arena_trace_export_error'] = type(error).__name__

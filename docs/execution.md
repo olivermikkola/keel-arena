@@ -26,7 +26,8 @@ This does not claim that container isolation or model quality has been verified.
 1. Verify the new frozen-study command across complete live model comparisons.
    It now produces exact private bindings, serial runs, safe resume and thermal stops
    using Harbor; no handwritten result matrix is needed.
-2. Preserve validated interchangeable trajectories alongside native evidence.
+2. Exercise the new validated ATIF timeline and native-request joins on complete
+   real-model runs. Offline conversion and actual scripted-harness evidence pass.
 3. Run a small matched real-model comparison with repetitions and thermal/resource
    guards. Report task coverage, failures, usage and complementary solves.
 4. Expand task/model coverage only after results can guide a concrete decision.

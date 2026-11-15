@@ -29,7 +29,7 @@ def _file_hash(path):
 
 def _code_hashes():
     return {name: _file_hash(Path(__file__).with_name(name))
-            for name in ('study.py', 'runtime.py', 'harbor_agent.py', 'harbor_import.py', 'results.py')}
+            for name in ('study.py', 'runtime.py', 'harbor_agent.py', 'harbor_import.py', 'results.py', 'trajectories.py')}
 
 
 def _tree(path, file_filter=None):
