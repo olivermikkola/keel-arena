@@ -52,13 +52,19 @@ rather than claiming those flags are enforced. A model request is not a tool cal
 one completion can contain several actions. `max_steps` in an Arena plan for this
 adapter means `max_model_requests` and must use the same declared value.
 
-The wrapper sends **nonstreaming** requests upstream, then serves an SSE envelope
-to Keel. This deliberate, frozen transport supports complete response evidence and
-actual token usage. It changes latency characteristics; do not compare it against
-an unwrapped streaming run as if the transport were identical. Providers must
-support OpenAI Chat Completions and the declared sampling fields; unsupported
-parameters fail as provider infrastructure errors. Model context/truncation and
-server-side sampling compliance still require operator verification.
+The wrapper requests **streaming** responses upstream, collects bounded SSE
+and final usage, then serves the assembled SSE envelope to Keel. Providers that
+ignore the streaming flag and return ordinary JSON remain supported. This avoids
+holding upstream response headers until a full slow completion finishes, which
+can exceed an intermediary's header deadline. It is still a collected transport,
+not a live token-for-token relay, so freeze it consistently across contestants.
+
+The exact raw SSE is retained privately as `stream-N.sse`; the assembled response
+links its digest. Text, explicit reasoning, fragmented tool arguments and final
+usage are reconstructed, while incomplete/error streams fail closed. Providers
+must support OpenAI Chat Completions and declared sampler fields. Unsupported
+parameters remain infrastructure errors. Model context/truncation and server-side
+sampling compliance still require operator verification.
 
 Each sandbox run creates fresh home and log directories. Logs contain private
 request/response evidence, native Keel output, and `runtime.json` with request

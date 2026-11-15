@@ -38,3 +38,20 @@ A successful backend process without a valid protected reward is not a solve.
 
 No third-party source or dataset is vendored. Any future reuse must preserve the
 upstream license and attribution; techniques are reimplemented for Arena's needs.
+
+## Slow-prefill transport finding
+
+A real local-model run through Harbor's allowlist sidecar repeatedly disconnected
+about 15 seconds after request admission, before a completion. The sidecar uses
+GOST's transparent HTTP handling. GOST documents a default 15-second deadline for
+[upstream response headers](https://latest.gost.run/en/reference/handlers/http/),
+matching the observed timing. Arena's initial nonstreaming request waited for a
+whole completion before headers, making it vulnerable to this intermediary limit.
+
+The replacement requests standard upstream SSE with usage events, preserves raw
+bounded events, then assembles the completion for Keel and ATIF. A local regression
+proxy with a short response-header deadline rejects the delayed nonstreaming case
+and accepts immediate streaming headers with a delayed body. This addresses the
+transport mechanism without relaxing the sandbox's network restrictions. A live
+comparison must still verify the real route; the proxy regression is not itself
+proof of model capability.

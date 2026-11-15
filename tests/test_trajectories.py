@@ -117,3 +117,16 @@ class TrajectoryTest(unittest.TestCase):
         self.save()
         with self.assertRaises(InvalidResult):
             build_trajectory(self.root)
+
+    def test_stream_wire_reference_is_verified_before_timeline_export(self):
+        import hashlib
+        raw = b'data: [DONE]\n\n'
+        (self.root / 'run/stream-1.sse').write_bytes(raw)
+        self.records[0]['response']['arena_stream'] = {'file': 'stream-1.sse',
+                                                     'sha256': hashlib.sha256(raw).hexdigest()}
+        self.save()
+        trace = build_trajectory(self.root)
+        self.assertEqual(trace['extra']['native_requests'][0]['stream']['sha256'], hashlib.sha256(raw).hexdigest())
+        (self.root / 'run/stream-1.sse').write_bytes(b'changed wire evidence')
+        with self.assertRaises(InvalidResult):
+            build_trajectory(self.root)

@@ -23,6 +23,7 @@ class RuntimeTest(unittest.TestCase):
         self.requests = []
         self.provider_error = None
         self.provider_delay = 0
+        self.emit_stream = False
         owner = self
         requests = self.requests
 
@@ -33,6 +34,25 @@ class RuntimeTest(unittest.TestCase):
             def do_POST(self):
                 body = json.loads(self.rfile.read(int(self.headers['Content-Length'])))
                 requests.append((body, self.headers.get('Authorization')))
+                if owner.emit_stream and body.get('stream'):
+                    self.send_response(200)
+                    self.send_header('Content-Type', 'text/event-stream')
+                    self.end_headers()
+                    self.wfile.flush()
+                    if owner.provider_delay:
+                        import time
+                        time.sleep(owner.provider_delay)
+                    chunks = [
+                        {'choices': [{'index': 0, 'delta': {'content': 'done'}, 'finish_reason': None}]},
+                        {'choices': [{'index': 0, 'delta': {}, 'finish_reason': 'stop'}]},
+                        {'choices': [], 'usage': {'prompt_tokens': 10, 'completion_tokens': 2}},
+                    ]
+                    payload = ''.join('data: ' + json.dumps(chunk) + '\n\n' for chunk in chunks) + 'data: [DONE]\n\n'
+                    try:
+                        self.wfile.write(payload.encode())
+                    except BrokenPipeError:
+                        pass
+                    return
                 if owner.provider_delay:
                     import time
                     time.sleep(owner.provider_delay)
@@ -104,7 +124,8 @@ with urllib.request.urlopen(req) as response:
         self.assertEqual(body['temperature'], 0)
         self.assertEqual(body['seed'], 7)
         self.assertEqual(body['model'], 'fixture-model')
-        self.assertFalse(body['stream'])
+        self.assertTrue(body['stream'])
+        self.assertTrue(body['stream_options']['include_usage'])
         self.assertEqual(auth, 'Bearer fixture-secret')
         self.assertEqual(self.metadata['input_tokens'], 10)
         self.assertEqual(self.metadata['output_tokens'], 2)
@@ -173,3 +194,62 @@ except Exception:
         self.assertEqual(self.metadata['responses'], 0)
         self.assertIsNone(self.metadata['input_tokens'])
         self.assertIsNone(self.metadata['output_tokens'])
+
+    def test_streaming_survives_response_header_deadline_proxy(self):
+        import http.client
+        import urllib.error
+        import urllib.request
+        owner = self
+        self.emit_stream = True
+        self.provider_delay = .3
+
+        class Proxy(BaseHTTPRequestHandler):
+            def log_message(self, *args):
+                pass
+
+            def do_POST(self):
+                body = self.rfile.read(int(self.headers['Content-Length']))
+                connection = http.client.HTTPConnection('127.0.0.1', owner.server.server_port, timeout=.1)
+                try:
+                    connection.connect()
+                    upstream_socket = connection.sock
+                    connection.request('POST', self.path, body=body, headers={'Content-Type': 'application/json'})
+                    response = connection.getresponse()
+                except TimeoutError:
+                    self.send_error(504)
+                    connection.close()
+                    return
+                upstream_socket.settimeout(3)
+                self.send_response(response.status)
+                self.send_header('Content-Type', response.getheader('Content-Type', 'application/json'))
+                self.end_headers()
+                try:
+                    while True:
+                        line = response.readline()
+                        if not line:
+                            break
+                        self.wfile.write(line)
+                        self.wfile.flush()
+                finally:
+                    connection.close()
+        proxy = ThreadingHTTPServer(('127.0.0.1', 0), Proxy)
+        thread = threading.Thread(target=proxy.serve_forever, kwargs={'poll_interval': .01})
+        thread.start()
+        self.addCleanup(thread.join)
+        self.addCleanup(proxy.server_close)
+        self.addCleanup(proxy.shutdown)
+        base = f'http://127.0.0.1:{proxy.server_port}/v1'
+        request = urllib.request.Request(base + '/chat/completions',
+                    data=b'{"model":"fixture","stream":false,"messages":[]}',
+                    headers={'Content-Type': 'application/json'})
+        with self.assertRaises(urllib.error.HTTPError) as error:
+            urllib.request.urlopen(request)
+        self.assertEqual(error.exception.code, 504)
+        error.exception.close()
+        result = self.launch(self.REQUEST, base_url=base)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(self.metadata['status'], 'completed')
+        self.assertEqual(self.metadata['input_tokens'], 10)
+        ledger = json.loads((self.root / 'logs/completion-1.json').read_text())
+        self.assertEqual(ledger['response']['choices'][0]['message']['content'], 'done')
+        self.assertTrue((self.root / 'logs/stream-1.sse').is_file())
