@@ -1,7 +1,7 @@
 """Bounded OpenAI-compatible execution wrapper, uploaded into a Harbor sandbox.
 
 Standalone standard-library module. No provider calls happen until explicitly run.
-The upstream transport is nonstreaming; Keel receives a compatible SSE envelope.
+The upstream transport streams into a bounded ledger; Keel receives a compatible SSE envelope.
 """
 
 import argparse
@@ -27,6 +27,97 @@ def read_json(source):
         raise ValueError('JSON exceeds runtime limit')
     return json.loads(raw)
 
+
+
+class ProviderStreamError(ValueError):
+    def __init__(self, payload, status=None):
+        self.payload = payload
+        self.status = status
+        super().__init__('provider returned an error event')
+
+
+def read_completion(response, logs, index):
+    """Collect standard SSE while retaining exact bounded wire evidence."""
+    if 'text/event-stream' not in response.headers.get('Content-Type', '').lower():
+        return read_json(response)  # Some compatible servers ignore stream=true.
+    raw_path = logs / f'stream-{index}.sse'
+    text, reasoning, tools = [], [], {}
+    usage, completion_id, finish = None, None, None
+    size = 0
+    event = []
+    done = False
+    with raw_path.open('xb') as raw:
+        while True:
+            line = response.readline(LIMIT + 1)
+            if not line:
+                break
+            size += len(line)
+            if size > LIMIT:
+                raise ValueError('provider stream exceeds evidence limit')
+            raw.write(line)
+            value = line.decode('utf-8').rstrip('\r\n')
+            if value.startswith('data:'):
+                event.append(value[5:].lstrip(' '))
+                continue
+            if value or not event:
+                continue  # Comment/heartbeat/event-name; no fabricated tokens.
+            data = '\n'.join(event)
+            event = []
+            if data == '[DONE]':
+                done = True
+                break
+            chunk = json.loads(data)
+            if not isinstance(chunk, dict):
+                raise ValueError('invalid provider event')
+            if chunk.get('error') is not None:
+                raise ProviderStreamError(chunk, status=getattr(response, 'status', None))
+            completion_id = chunk.get('id', completion_id)
+            if chunk.get('usage') is not None:
+                usage = chunk['usage']
+            choices = chunk.get('choices', [])
+            if not isinstance(choices, list) or len(choices) > 1:
+                raise ValueError('one streamed choice required')
+            if not choices:
+                continue  # Final usage-only event.
+            choice = choices[0]
+            if not isinstance(choice, dict) or choice.get('index', 0) != 0:
+                raise ValueError('unsupported completion choice')
+            delta = choice.get('delta') or {}
+            if not isinstance(delta, dict):
+                raise ValueError('invalid completion delta')
+            for key, parts in (('content', text), ('reasoning_content', reasoning)):
+                if delta.get(key) is not None:
+                    if not isinstance(delta[key], str):
+                        raise ValueError('text-only provider stream required')
+                    parts.append(delta[key])
+            for call in delta.get('tool_calls') or []:
+                if not isinstance(call, dict) or type(call.get('index')) is not int or call['index'] < 0:
+                    raise ValueError('invalid tool delta')
+                target = tools.setdefault(call['index'], {'id': '', 'type': 'function',
+                                                          'function': {'name': '', 'arguments': ''}})
+                if call.get('id') is not None:
+                    target['id'] += call['id']
+                for key in ('name', 'arguments'):
+                    value = (call.get('function') or {}).get(key)
+                    if value is not None:
+                        if not isinstance(value, str):
+                            raise ValueError('invalid function delta')
+                        target['function'][key] += value
+            if choice.get('finish_reason') is not None:
+                finish = choice['finish_reason']
+    if not done or finish is None:
+        raise ValueError('incomplete provider stream')
+    message = {'role': 'assistant', 'content': ''.join(text) or None}
+    if tools:
+        if sorted(tools) != list(range(len(tools))):
+            raise ValueError('noncontiguous tool delta indices')
+        message['tool_calls'] = [tools[key] for key in sorted(tools)]
+    if reasoning:
+        message['reasoning_content'] = ''.join(reasoning)
+    with raw_path.open('rb') as source:
+        stream_hash = hashlib.file_digest(source, 'sha256').hexdigest()
+    return {'id': completion_id, 'choices': [{'index': 0, 'message': message, 'finish_reason': finish}],
+            'usage': usage, 'arena_stream': {'file': raw_path.name, 'sha256': stream_hash}}
 
 def validate_config(config):
     expected = {'binary', 'binary_sha256', 'root', 'home', 'logs', 'model', 'base_url',
@@ -111,14 +202,14 @@ def run(config):
                         return
                     state['requests'] += 1
                     index = state['requests']
-                body.update(model=config['model'], stream=False,
+                body.update(model=config['model'], stream=True,
                             max_tokens=config['max_output_tokens'],
                             temperature=config['temperature'], top_p=config['top_p'], seed=config['seed'])
                 body.pop('chat_template_kwargs', None)
                 if config['thinking'] is not None:
                     body['chat_template_kwargs'] = {'enable_thinking': config['thinking']}
                 body.pop('max_completion_tokens', None)
-                body.pop('stream_options', None)
+                body['stream_options'] = {'include_usage': True}
                 (logs / f'request-{index}.json').write_text(json.dumps(body) + '\n')
                 headers = {'Content-Type': 'application/json'}
                 if api_key:
@@ -129,7 +220,7 @@ def run(config):
                 if remaining <= 0:
                     raise TimeoutError('deadline exhausted')
                 with urllib.request.urlopen(request, timeout=remaining) as response:
-                    answer = read_json(response)
+                    answer = read_completion(response, logs, index)
                 if not isinstance(answer, dict) or not isinstance(answer.get('choices'), list) or len(answer['choices']) != 1:
                     raise ValueError('invalid completion envelope')
                 # Evidence is private sandbox output, never printed or uploaded.
@@ -162,10 +253,10 @@ def run(config):
             except (OSError, ValueError, KeyError, TypeError, AttributeError, TimeoutError) as error:
                 failure = 'provider_error'
                 evidence = {'exception_type': type(error).__name__}
-                if isinstance(error, urllib.error.HTTPError):
-                    evidence['http_status'] = error.code
+                if isinstance(error, (urllib.error.HTTPError, ProviderStreamError)):
+                    evidence['http_status'] = error.code if isinstance(error, urllib.error.HTTPError) else error.status
                     try:
-                        raw = error.read(65537)
+                        raw = error.read(65537) if isinstance(error, urllib.error.HTTPError) else json.dumps(error.payload).encode()[:65537]
                     except OSError as body_error:
                         evidence['body_read_error'] = type(body_error).__name__
                         raw = b''
@@ -254,7 +345,7 @@ def run(config):
     metadata = {**state, 'status': status, 'exit_code': code,
                 'binary_sha256': config['binary_sha256'],
                 'policy': {k: config[k] for k in ('max_model_requests', 'max_output_tokens', 'temperature', 'top_p', 'seed', 'thinking', 'context_tokens', 'timeout_seconds')},
-                'transport': 'nonstreaming-upstream-sse-envelope'}
+                'transport': 'streaming-upstream-collected-sse-envelope'}
     (logs / 'runtime.json').write_text(json.dumps(metadata, indent=2) + '\n')
     if status == 'timeout':
         return 124

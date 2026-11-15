@@ -20,7 +20,8 @@ arguments, observations and model identifiers; it is not a public/redacted expor
 ## Evidence fidelity
 
 - Each agent step links to the exact native completion file and its byte digest,
-  plus the canonical request digest. Native records preserve the full actual
+  plus the canonical request digest. Streamed responses also link and verify
+  the exact private SSE byte digest before exporting the assembled timeline. Native records preserve the full actual
   context, tools and response, including context changes between calls.
 - Initial text messages and observed model responses are preserved. Token counts
   come from provider responses and runtime accounting, with unknown values left

@@ -28,6 +28,13 @@ def build_trajectory(agent_directory):
                 'missing request context')
         references.append({'file': relative, 'sha256': hashlib.sha256(raw).hexdigest(),
                            'request_sha256': canonical_hash(record['request'])})
+        stream = record['response'].get('arena_stream') if isinstance(record['response'], dict) else None
+        if stream is not None:
+            require(isinstance(stream, dict) and isinstance(stream.get('file'), str) and
+                    stream['file'] == f'stream-{index}.sse', 'invalid native stream reference')
+            raw_stream = read_bytes(root, 'run/' + stream['file'])
+            require(hashlib.sha256(raw_stream).hexdigest() == stream.get('sha256'), 'native stream digest mismatch')
+            references[-1]['stream'] = stream
         records.append(record)
     steps = []
     for message in records[0]['request']['messages']:
