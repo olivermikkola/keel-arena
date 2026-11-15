@@ -1,0 +1,19 @@
+# Local evaluation data must never enter public history.
+/private/
+/runs/
+/artifacts/
+/tasks/private/
+/models/
+/checkpoints/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+/build/
+/dist/
+/coverage/
