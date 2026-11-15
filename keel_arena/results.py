@@ -124,8 +124,12 @@ def validate(data):
     return data
 
 
-def summarize(data):
+def summarize(data, pass_k=(1, 2, 4, 8)):
     validate(data)
+    require(isinstance(pass_k, (list, tuple)) and 1 <= len(pass_k) <= 16,
+            "request between one and sixteen pass@k values")
+    require(all(integer(k, 1) and k <= 100000 for k in pass_k), "invalid pass@k value")
+    pass_k = sorted(set(pass_k))
     rows = data["attempts"]
     # One infrastructure failure excludes that block for every contestant.
     excluded = {(r["task"], r["repetition"]) for r in rows
@@ -148,6 +152,39 @@ def summarize(data):
             "matched_input_tokens": _total(eligible, "input_tokens"),
             "matched_output_tokens": _total(eligible, "output_tokens"),
         }
+    per_task = {}
+    for task in sorted(data['tasks']):
+        eligible_reps = [rep for rep in range(data['repetitions']) if (task, rep) not in excluded]
+        models = {}
+        for name in sorted(data['contestants']):
+            correct = sum((task, rep) in solved[name] for rep in eligible_reps)
+            models[name] = {'matched_attempts': len(eligible_reps), 'solved': correct,
+                            'solve_rate': correct / len(eligible_reps) if eligible_reps else None}
+        per_task[task] = {'matched_repetitions': eligible_reps,
+                          'excluded_repetitions': [rep for rep in range(data['repetitions'])
+                                                   if (task, rep) in excluded],
+                          'contestants': models}
+    eligible_tasks = [task for task, value in per_task.items() if value['matched_repetitions']]
+    for name, summary in summaries.items():
+        summary['matched_task_mean_solve_rate'] = (
+            sum(per_task[task]['contestants'][name]['solve_rate'] for task in eligible_tasks) / len(eligible_tasks)
+            if eligible_tasks else None)
+    pass_scores = {}
+    for k in pass_k:
+        cohort = [task for task, value in per_task.items() if len(value['matched_repetitions']) >= k]
+        pass_scores[str(k)] = {
+            'eligible_task_ids': cohort,
+            'contestants': {name: sum(estimate_pass(len(per_task[task]['matched_repetitions']),
+                                                   per_task[task]['contestants'][name]['solved'], k)
+                                      for task in cohort) / len(cohort) if cohort else None
+                            for name in sorted(data['contestants'])}}
+    task_differences = []
+    for left, right in itertools.combinations(sorted(solved), 2):
+        differences = {task: per_task[task]['contestants'][left]['solve_rate'] -
+                             per_task[task]['contestants'][right]['solve_rate']
+                       for task in eligible_tasks}
+        task_differences.append({'left': left, 'right': right, 'per_task_difference': differences,
+                                 'mean_difference': sum(differences.values()) / len(differences) if differences else None})
     pairs = []
     for left, right in itertools.combinations(sorted(solved), 2):
         pairs.append({"left": left, "right": right,
@@ -164,6 +201,10 @@ def summarize(data):
         "excluded_blocks": len(excluded),
         "matched_blocks": len(matched) // len(data["contestants"]),
         "contestants": summaries,
+        "per_task": per_task,
+        "tasks_with_matched_attempts": len(eligible_tasks),
+        "pass_at_k": pass_scores,
+        "paired_task_differences": task_differences,
         "pairwise": pairs,
         "union_solved_blocks": len(set().union(*solved.values())),
     }
@@ -171,3 +212,18 @@ def summarize(data):
 
 def _total(rows, key):
     return sum(r[key] for r in rows) if rows and all(r[key] is not None for r in rows) else None
+
+
+def estimate_pass(attempts, correct, k):
+    """HumanEval's combinatorial estimator, independently implemented with logs."""
+    require(integer(attempts, 1) and integer(correct) and correct <= attempts and
+            integer(k, 1) and k <= attempts, "pass@k requires 0 <= correct <= attempts and 1 <= k <= attempts")
+    if correct == 0:
+        return 0.0
+    if attempts - correct < k:
+        return 1.0
+    # C(n-c,k)/C(n,k) == C(n-k,c)/C(n,c). Use the shorter product,
+    # log1p/expm1 for numerical stability, and no large combinatorial integers.
+    draws, successes = (k, correct) if k <= correct else (correct, k)
+    log_failure = sum(math.log1p(-successes / (attempts - index)) for index in range(draws))
+    return -math.expm1(log_failure)

@@ -8,6 +8,7 @@ claims that Arena matches these projects' benchmark coverage.
 | Harbor | Installed-agent adapters, separate verifier environments, trial artifacts, ATIF | Integrate the existing engine; keep model execution out of the reporting CLI. Pin 0.26.0, validate its actual SDK, and retain native evidence. |
 | SWE-bench | Grade final patches against protected repository tests; explicit broken/fixed controls | Test task verifiers with broken, repaired and adversarial submissions before trusting a model score. Use content hashes and fresh run directories; never reuse a cached score for a changed patch. |
 | Inspect | Detailed evaluation logs, error policies, repeated epochs and clustered metrics | Keep infrastructure errors distinct, preserve unknown usage, and compare paired tasks. Repetitions are not independent tasks. Add task-clustered uncertainty before interpreting leaderboard differences. |
+| HumanEval | Combinatorial pass@k over repeated samples | Report it on explicit shared eligible cohorts, with sampling assumptions visible. |
 | Aider | End-to-end editing measured by actual unit-test outcomes | Measure completed edits and repair loops, not whether a tool call parses. Small tasks diagnose specific failures; they cannot establish general coding ability. |
 
 ## Deliberate differences
@@ -32,6 +33,7 @@ A successful backend process without a valid protected reward is not a solve.
 - [SWE-bench harness and cache behavior](https://www.swebench.com/SWE-bench/reference/harness/)
 - [Inspect logs and retry provenance](https://inspect.aisi.org.uk/eval-logs.html)
 - [Inspect clustered metrics](https://inspect.aisi.org.uk/metrics.html)
+- [HumanEval estimator](https://github.com/openai/human-eval/blob/master/human_eval/evaluation.py)
 - [Aider end-to-end benchmark methodology](https://aider.chat/docs/benchmarks.html)
 
 No third-party source or dataset is vendored. Any future reuse must preserve the
