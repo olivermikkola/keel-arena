@@ -1,0 +1,230 @@
+{
+  "license": "MIT",
+  "pack": "gauntlet-v1",
+  "schema_version": 1,
+  "split": "development",
+  "tasks": {
+    "adversarial/injected-issue-triage": {
+      "files": {
+        "environment/Dockerfile": "85dcb07080e9d8623b304348cc6394b835f78a7202229fdaf110bf4acd7a7ac1",
+        "environment/workspace/tickets.json": "2dc61902eaa42d97e37fddd56bd3a0c5603042a60ff1e013be4824a57d19768c",
+        "instruction.md": "a86837f31c486cc81da5bc8fa5903346cf1dd04a4dba9c4b7d64dc670c246ff4",
+        "solution/solve.sh": "98230b0fac7530d0b43a2a875e8466459932c1998367c3b0231655c5a81f6355",
+        "solution/triage.json": "ddf8c4b0eeeee3fc7b8e55b2a8da779c5f8545a07a9aed0274ea1539018afdbe",
+        "task.toml": "ff32ea036e6b07583fd5ab6dacfbec780b4ec4f215ab73e2fd35eb630433ec5f",
+        "tests/judge.py": "8d2ab5f75911e6b35795e949a2919a930f0b615e8d661839d4a1bc5c51c66290",
+        "tests/test.sh": "5c593aaf7caf9b6b048229cd2f79d56411bca44f0e014267f8ba4a29a45a6aae"
+      },
+      "snapshot_sha256": "f9113c6e82776a84af23d21d630e9f406f0dfedcd2fc4aaa05325af6127e86d3"
+    },
+    "adversarial/misleading-hint-trap": {
+      "files": {
+        "environment/Dockerfile": "51fbb7624ab0922978ce12ad98ba8ce601f247ccaddb3eee3e692bf8e77bf568",
+        "environment/workspace/DEBUG_NOTES.md": "8b8fe11a521346a4b1754155b0744b8bd4f78bec9b0d86109f6fdd88ae3dd494",
+        "environment/workspace/SPEC.md": "f795ec2198442bce062e1207b289b59106313405b1b53f647a76e90930353fe7",
+        "environment/workspace/validator.py": "975fec352741bd1f29c7efe972040498957737240b8bd913079d57aebd0907ae",
+        "instruction.md": "96602e4b73c0a8cb128be7491be7f20d51537654e9b402b0bb2a3f8149fd8ef3",
+        "solution/solve.sh": "19021f7d31d6a24ffff8fec296cb8709927f6d5749efafaabb9b2985f7e1a8ca",
+        "solution/validator.py": "84bb3b19fde74fd49ca75d919858393e08fefea37c60dc796d05b9987b4591e7",
+        "task.toml": "5b09860621bbba57fa8f36c06752d4f70fd59bc0b7ed3f5f5f53161ad960a61f",
+        "tests/judge.py": "99278a4840a2b9599b39eeb8a97750759a6e70f4bcc07479bf2333ba4c519e7a",
+        "tests/test.sh": "5c593aaf7caf9b6b048229cd2f79d56411bca44f0e014267f8ba4a29a45a6aae"
+      },
+      "snapshot_sha256": "a47b86da1af7e7e5c82ad50ba65b4f26d95f0248a61d6bf32cfaaeb319b60ee9"
+    },
+    "agent-chains/incident-postmortem-chain": {
+      "files": {
+        "environment/Dockerfile": "6b9ffa98b55e0910a18877dec05e53e49ea293f53bb416bcedd860ac34895826",
+        "environment/workspace/incidents/deploy_log.jsonl": "5c0fd91b35b0849b0c4e38c830cd73b8e4689e2454025be7051d3119465b9182",
+        "environment/workspace/incidents/metrics.csv": "204edcfc099210db9b5599b38b5d8c9c5bc948c7a7f29c08007ee543fe8a8345",
+        "environment/workspace/incidents/runbook.md": "b193fa6390a94468cfcc966659623241ef655192f6a9877f2480ead6383929a1",
+        "instruction.md": "ce7298385956cbe6e6efd0e9ad17f092f675557676a3b74aeb757e90be17c8c9",
+        "solution/postmortem.json": "7455dac491c692af399df17c41637d0058f0b38d2b6a43f95232102c7b9bb106",
+        "solution/postmortem.md": "0666e4f2d04515b88320730ea644a92cd98d5c8e9fc75fee5a84800e3b164a6b",
+        "solution/solve.sh": "8dc5e3f16597c3e1383e107750af767d014200179dba8be6af5213e972c529c1",
+        "task.toml": "4afab49c24dfa93454a6cdb0192765ae06ba99ab9b5c597e2d7ae89f8973499c",
+        "tests/judge.py": "456e4c6aa0342b3d684f6b3a3959f22635cd2e343fb1e72c1a4c4cd937e23f92",
+        "tests/rubric.json": "999cd665e18d7488285582f211c4edd5f0103a5ea386abdf9a28d75c6db20a7f",
+        "tests/test.sh": "5c593aaf7caf9b6b048229cd2f79d56411bca44f0e014267f8ba4a29a45a6aae"
+      },
+      "snapshot_sha256": "77d8ebfb36ac284e1d3dc22d40606b5875bc19f278fccc583fc6d772797fa446"
+    },
+    "agent-chains/release-readiness-chain": {
+      "files": {
+        "environment/Dockerfile": "40caaaa7a56e62b92f4a2ab4276f7b046bb824e2d5b67dc34f133a1dc9d22248",
+        "environment/workspace/changelogs/v2.4.md": "2fdd5a813c06153d887a746d32b658cfabefabed396dac9260d531c9d9aeb719",
+        "environment/workspace/checks/verify_deps.py": "1f3112f214b403ad81c68f76288f429c29d46fc46f59e774ab4c99e3179cc17c",
+        "environment/workspace/deploy/target.env": "f6aa6794d4e63249981ae8d9ce9464573748201ceeffbea5fa0c9121ce3aa74d",
+        "environment/workspace/manifests/services.json": "da3470949064d37bece510be884969dde9893b222535eeba28e28abe41fd402f",
+        "instruction.md": "f5a641de7b94f49298d581ffd92d0a5b7e66dec12426ced896881ca14e801a04",
+        "solution/release_bundle.json": "79c9996ec9ae9da4e5f076a52d7d6954dd6ee63420dd68ba6bc5ebecce19a618",
+        "solution/services.json": "deaa6805c709d22263d00cbc2fe94997b85027318d81689dac49fa705338bc98",
+        "solution/solve.sh": "2e4c54c3035b9a2d3710814ee13ca61d92e0be486e93f1381b5f92d55e806e3f",
+        "solution/target.env": "0e86d61f458ffc0573da3584e9473a96997606990e15415bd8cd3c81cea88b7e",
+        "task.toml": "cb34c6096da61c60281adb1ca0edb5350317787237e474e6db0c1a8edb69e014",
+        "tests/judge.py": "c13cb4a87b6a97e50c463ba027794bd7b53e1c9765ed18275b74d11c9ae76525",
+        "tests/test.sh": "5c593aaf7caf9b6b048229cd2f79d56411bca44f0e014267f8ba4a29a45a6aae"
+      },
+      "snapshot_sha256": "be93aad2c632ae620e56f35f0b470b67809077245119d3f174f2164e119742c6"
+    },
+    "coding/cli-pipeline-fix": {
+      "files": {
+        "environment/Dockerfile": "a34f39d66bd1ca97d831029deea0ba4529dd968024d512721b47906caaebb4e3",
+        "environment/workspace/cli.py": "185abbb8edf5d2fb7cc22be6cf1824e82b2f1394f2525a9154059b5906a9f3ef",
+        "environment/workspace/formatter.py": "a202fbf3f075cfae47f89a93bf9654c45a9efe27ffc92036de8647b74a30df27",
+        "environment/workspace/parser.py": "559fb5880c79ee1f9d87a944dd7a6e4dc9e82b64b36885d684e6213d9062da0d",
+        "instruction.md": "a5fd64f50c4f6ef1274768f629e458f778863e64dd046a05b9c787f7bbd91df4",
+        "solution/cli.py": "c6169fcb3cc31d036684356a8ac394ea06175cff0e19ba66a6b2e64263ceae21",
+        "solution/formatter.py": "b4d96ac7654f9898021b64efb184ca893adc7f08270bc624c8b0a804a5f2c255",
+        "solution/parser.py": "d468ee77a81d9dd6ee760d0e932ee7dd38753c570a6e51d365edf457b0eb1271",
+        "solution/solve.sh": "350d74a771b6816b2f55d2b52148a67f4fa31b87d7e5833a865c99b6ede30993",
+        "task.toml": "08d296f24479657ce08b27b6fbc93b90aaafdb2cc9d62be2ec5549e5624ff239",
+        "tests/judge.py": "98f0a3f6a1b486ced519095e984b73e456323c90a49d690992678e680f6248a9",
+        "tests/test.sh": "5c593aaf7caf9b6b048229cd2f79d56411bca44f0e014267f8ba4a29a45a6aae"
+      },
+      "snapshot_sha256": "18f35c2bd2cb9d58bfd3f85985271ac062204095a22703e5a3c01b675ecf30d0"
+    },
+    "coding/terminal-log-indexer": {
+      "files": {
+        "environment/Dockerfile": "b254948d1879e513c982e9039032d9326cb0bce63e20a741166a8a79d6542988",
+        "environment/workspace/SPEC.md": "a3fc2448213c0aaa5fbadfc60b5a411fa4488d68477724468556a87b36cc31cb",
+        "environment/workspace/sample.log": "b52feb4f9443e2dc90a6bd2fd1a73b6b177f2f372255080ff556d72fac28ae44",
+        "instruction.md": "640a20d4d930f4ea2ba6b32a359354dd044996b79dc705e8ba8b4d4de58a39bf",
+        "solution/indexer.py": "f558199488812e42e11e051baa7121d7c29a45f1ac4da7a67543a0c6d3ba49eb",
+        "solution/solve.sh": "da2032d77698397e524276991fe9219e6d208caf67abea22c8961dcb48bef622",
+        "task.toml": "54c5592836aeace7ac4557c7374737e32f4f0f1e01e827e10a3ad4e941beeea3",
+        "tests/judge.py": "d571a02c3d7f2983b13ed5f5873ba051344dff8ead35549112d5bfcc60b2ca55",
+        "tests/test.sh": "5c593aaf7caf9b6b048229cd2f79d56411bca44f0e014267f8ba4a29a45a6aae"
+      },
+      "snapshot_sha256": "2c9e14d936dd96555b4d23f7871d6b7baf84648482a9ff688b0cedecc6752d12"
+    },
+    "instruction/code-review-patch-notes": {
+      "files": {
+        "environment/Dockerfile": "cf53c4ce4faaf8753147c26d5e39cab8bd332cf9d03d76b92b57e0730ae45ae8",
+        "environment/workspace/diff.patch": "9ea1f6256c975e7b2dd636639c1017458fea40ca483484911fd35b93a08df219",
+        "instruction.md": "6fd748a373aab3f732d29b4bcb227edd725c1dbc935249f58e3f1f58b369c55b",
+        "solution/review.md": "894ea64b24148894c0ad63967ccf8e11a48b44bbdd651952804701c01750c252",
+        "solution/solve.sh": "080c5e9aa0caedfbcd2af464d290111bfe5713428a6c3049364758261363182e",
+        "task.toml": "8259a1b9c60ee216ac95b3e9ae85e175d150e00c55742279762f34acc16c93ac",
+        "tests/judge.py": "7ee70d2c6adadf629226013d5f82cf34225ef277fb313b4d47d532d8c4fae2c3",
+        "tests/rubric.json": "6b81964e2c27a827f199ebd883fc467a814b59216cf6281d5612531bb7f686b1",
+        "tests/test.sh": "5c593aaf7caf9b6b048229cd2f79d56411bca44f0e014267f8ba4a29a45a6aae"
+      },
+      "snapshot_sha256": "666405291e455c740424956b5fabcb93006bd1b44be31f1c49e35e915f699397"
+    },
+    "instruction/stacked-spec-brief": {
+      "files": {
+        "environment/Dockerfile": "06d673239f4b40b41cedf811a11da0437eadcbe719a6f095040d3d2ac7a0b51a",
+        "environment/workspace/architecture_notes.txt": "cf5ef40a04e13704d7084cc7731b7f253b5347290fb1cfb220a8463c733c23a4",
+        "instruction.md": "ebbcc9a281a30dede5267422feea0bb0e931d0705ac2a5178f9754a2cec3f4a6",
+        "solution/brief.md": "7d7eb4838619807542bb2b46ad3e47a5cea9958551fd492319b4d28efceb3b0a",
+        "solution/solve.sh": "bb2be47100cc7baf92d487dcf691bbe5a4d3e0ce39477d634fb1fe76f3f4733f",
+        "task.toml": "d593ffc8938af6c5ff7660f8e9490818bcdf5e8d901e42487822b044ff3a495b",
+        "tests/judge.py": "3c855b8b1a5c23d8f24dde126dd506eb3e009b6cc79cdc48d13403fb238b1ccc",
+        "tests/rubric.json": "cdda236111c8e02301efa92dbf1bb4ce573e66569a977954ccf378de6cec6100",
+        "tests/test.sh": "5c593aaf7caf9b6b048229cd2f79d56411bca44f0e014267f8ba4a29a45a6aae"
+      },
+      "snapshot_sha256": "2dddf8d923cbf233cd30f6f1297f9d7d729d067624af65542703b6023fe4ffa1"
+    },
+    "retrieval/chronological-policy-override": {
+      "files": {
+        "environment/Dockerfile": "b9e41b9043ed81952ff355ab791283b2c066f0a6c9e215f807092a0c65bedee1",
+        "environment/workspace/docs/memo_01.md": "63d7500df82561ca69ca75ef9818c281d4352ef04715c0d2541b8462658c310f",
+        "environment/workspace/docs/memo_02.md": "ee1447683692604b4b8484c00b3ecf0733bf5132ceed768b863554664bc9f8a5",
+        "environment/workspace/docs/memo_03.md": "e9401a54962eda315eac7039be008c573917c966b4b19f50f220803550372561",
+        "environment/workspace/docs/memo_04.md": "f4229c9f7c204aed62b10f0548d0cad7ee26a8c0b95d9837aacd883eb5a62079",
+        "environment/workspace/docs/memo_05.md": "45eb88330f1919fc0afdbe48604d0b0553bce843bc81a178c8e9facc458c7713",
+        "environment/workspace/docs/memo_06.md": "e551fb0d918e687311a3e89a644e595f76b67b05b4cefbf7cd37406c2cce831c",
+        "environment/workspace/docs/memo_07.md": "c509223f6642aee844e0999641e85457be95a200182b8e36bc099269624bd356",
+        "environment/workspace/docs/memo_08.md": "2d511423f4ccc1d0b646fa052862877901aa83563bcd36c7c1ee5a75fe96e2c9",
+        "environment/workspace/docs/memo_09.md": "1b277c1846816011c60604dfe385c4f7d494a83631822572dcd9ea958d746844",
+        "environment/workspace/docs/memo_10.md": "b049608eec7b100843da999c6a566ba47e6ce3e61ca47202399366c2358c7620",
+        "environment/workspace/docs/memo_11.md": "d856da8e4636bd33bd4e2f9022ef352d906207a491d1b8ca33285b1ebb59dd3d",
+        "environment/workspace/docs/memo_12.md": "84fe07ed335993216d4db785ce01682d409a9a40a8251b244e770b0e2f369373",
+        "instruction.md": "436bf3ffebca70dff37467f57b798a6e3e9dfb4dd32d334a0e49f1f1d5fd433e",
+        "solution/answers.json": "e9add36998e17ef1c7bea04746b4ef7b064bdf9ccc3be5109226942ac78831dd",
+        "solution/solve.sh": "facf342ab0faca5ec84750005bd898aa08424e07410b13ebaf8cff5a2b02a472",
+        "task.toml": "71845a07ee857f9b361e0714f3f51a4c38e8b1daa3e3c33dfdd3d9cd8a582355",
+        "tests/judge.py": "5a572b19a1951e4006538bc281e429a4e1236b9b2ab0a5a44284ee0adf945181",
+        "tests/test.sh": "5c593aaf7caf9b6b048229cd2f79d56411bca44f0e014267f8ba4a29a45a6aae"
+      },
+      "snapshot_sha256": "f868e0a01b65e9b3dc0757f205d229031d5104ec3474b09e82d456a947338926"
+    },
+    "retrieval/cross-repo-dependency-trace": {
+      "files": {
+        "environment/Dockerfile": "f52269eb49e4825378f897253e4e636134ce2537d6992d119b78b8242ac5da66",
+        "environment/workspace/traces/shard_01.txt": "daa3e62121d24ba4badbc2276e0e68afd135985096a19ba0f2459d00015a5b8d",
+        "environment/workspace/traces/shard_02.txt": "0ffacf313ae8a53e60457693dbcec98b311d82f79175c958f94a91e0ce641d16",
+        "environment/workspace/traces/shard_03.txt": "b221c8573776aaa8565249d3f05e3081196b112cbbbb1991d08f267a31bd0d5e",
+        "environment/workspace/traces/shard_04.txt": "89a394d2f0a949c26421fd6fa85bfd194f103e12f46e4292d53fc12490fe5fd8",
+        "environment/workspace/traces/shard_05.txt": "d962e33928d3978fee487b16d4e85234e1c9359a5683d53d7fd3957d551a858e",
+        "environment/workspace/traces/shard_06.txt": "1d920c95687968c1999aaeaf7ae88b16d69da5ea92edbafafc1a9ed683434d61",
+        "environment/workspace/traces/shard_07.txt": "c98a8af0a7d0341862b884c7d6e787eabb60521924381184a01b0fdc00406108",
+        "environment/workspace/traces/shard_08.txt": "e71fc18abeec278ddf68bdfdf4ad2c297bfb4e6e978031e407f6f00b8676eff2",
+        "environment/workspace/traces/shard_09.txt": "ec7cb926d7dbbc607fbd7581987f609d956d75bd3ea4d630f563c42f8656b0f2",
+        "environment/workspace/traces/shard_10.txt": "4d0c89b39629bc31565117db5f19eb8dc58dea52ca220cb386a18c1d1aef8076",
+        "instruction.md": "6694b1e6a44896e6a8ec1bfc376e69974447b1e3932b2eb7658ca5d640b0f9f8",
+        "solution/solve.sh": "f6143e7f29e590b9548d03c68708d83d9a4b947adcf194e1b278405b01cca220",
+        "solution/trace_report.json": "08c7bacc13f4fc64a82a41bdf228b60c7672dd30c0f1cfd98e5e0fc0edc09558",
+        "task.toml": "da3de2395d9aeed4bf880914901ff5f6b6f8b916751890602906b225eda712e1",
+        "tests/judge.py": "052d06a88d9a5f4218e19e031425d7ca23a4580b9f6f20bf6f3e44ac9ff9aff6",
+        "tests/test.sh": "5c593aaf7caf9b6b048229cd2f79d56411bca44f0e014267f8ba4a29a45a6aae"
+      },
+      "snapshot_sha256": "9be9912664fb0212f0c1ce5eb30c0a107dfaf5034fb483a7a396c04dab3eaff1"
+    },
+    "structured/config-migration-schema": {
+      "files": {
+        "environment/Dockerfile": "4017376ed7d38e21bddd7eb949c9b3bef686e05ddc5d97143489d9c79759d733",
+        "environment/workspace/legacy.ini": "dd4e03f2d1c7692ae5dd13c03d0d3b7f04b8e7542110edfbbeb50825f86b32b8",
+        "environment/workspace/schema_notes.md": "4a042c1f46c65cf50b43bac5665f6222fda7fc425e1b9bf2bc3eba76d21e1553",
+        "instruction.md": "6258fc47f60a4ae94536c968395ec4ce74f14364d7bf8c5a7a4e7144f028c5ed",
+        "solution/migrated.json": "8297ccb658bf5b27bde075dffffe0a20357feb776ec5c8ef4215f5b280e97bc9",
+        "solution/solve.sh": "15894e02022744741abf9f98999d8b43be54701a335b6155d135eab0df774338",
+        "task.toml": "4611ce6b74f20de5a21539cbdb0b78c36dd08d569811b53f56c2e2459fbd4b74",
+        "tests/judge.py": "3ad3631590f514d13ba98c2a03702031914f018f0175203380679a92090cb3e8",
+        "tests/test.sh": "5c593aaf7caf9b6b048229cd2f79d56411bca44f0e014267f8ba4a29a45a6aae"
+      },
+      "snapshot_sha256": "3b63e7734eb44fb0273758558fba27bd00f6f98ebfde051a018ee2f95e879311"
+    },
+    "structured/invoice-normalization": {
+      "files": {
+        "environment/Dockerfile": "b6f4edc3bac9c9fcae643976549129a7a631e2f0dd35893be30ebb7f7e9660e1",
+        "environment/workspace/raw_invoices.csv": "33e257936db201c4f1cef7815564166bb372eaa29896078e3af817cd6c0ba481",
+        "instruction.md": "fb70bd1f826944e67215567df4368e994fd48b05f6d9b191a5b9fd0c6e96a8d6",
+        "solution/normalized.json": "4d13b9ef5c4661c6cc8577ee3dc0a9dcdf1e3fce9a71c707fb1cc98bae5e7a24",
+        "solution/solve.sh": "c19acd1ab22be36c4ed91a09de71bd2d93b0f32e05d5df09ab89e678f08c1f00",
+        "task.toml": "7678cabf62e346a27a4133d8fb1eb323f290c9518c063d863a2409da722323fa",
+        "tests/judge.py": "4f713a11679fa10e54971cada800365e8b75c05dce3bd1a4931bbd1375b02455",
+        "tests/test.sh": "5c593aaf7caf9b6b048229cd2f79d56411bca44f0e014267f8ba4a29a45a6aae"
+      },
+      "snapshot_sha256": "2c5c81f1c990f3d7746d62dffd5952227b6db9eca3f6de2a52a5decbc6512633"
+    },
+    "tool-use/api-contract-recovery": {
+      "files": {
+        "environment/Dockerfile": "7027de49a62a161e68c95afe29cc386e11a1b406ee963556e570f1d0e50d19f3",
+        "environment/workspace/service.py": "95d7a223faefda4215cf661442e440d6ffd0e34b602d9f78a2e643c67f171848",
+        "instruction.md": "038871c36d310880343d1d7dab1ff3ee2b7fa24d32c90ca32dda734dd19afbad",
+        "solution/solve.sh": "c81af7a0c1a09564eab9adc9af07638cf7bb608b7506ae5f8345c3d7162dc85e",
+        "solution/summary.json": "c9e38ebb91e3447320fe0546402484c5fce4bdfcd6b44c40926317df35be702b",
+        "task.toml": "c2deea0503b54a03abc3f2e34556c167bbfd6f2bb9a78665c9689a26a0ae53a4",
+        "tests/judge.py": "862235efa8301319c3b6686880f53db465d89f43ec44eff4acff9d05c225b038",
+        "tests/test.sh": "5c593aaf7caf9b6b048229cd2f79d56411bca44f0e014267f8ba4a29a45a6aae"
+      },
+      "snapshot_sha256": "0a03267869eeac1d296e26d2193de4461dda64639831c4dbac4cc3f6c4ed00cf"
+    },
+    "tool-use/sqlite-query-repair": {
+      "files": {
+        "environment/Dockerfile": "aeff41b560374b7c01c07f98d2183cb9af0e4147b5ba9ab925f9671fd73f9c54",
+        "environment/workspace/dbtool.py": "07abaf5df80efbcbe572eb9cbda60752596672022712c01f5cd7f0858f5b7d57",
+        "environment/workspace/seed.json": "1832bebd7d1527e8b380a4b578872ae810c27255fe432e9617c40d75cca6ec47",
+        "instruction.md": "f2074bad55358d5f2e24f9627512f1a28bae3e91d88de74c6bb3a5e36a43e7c0",
+        "solution/report.json": "5c3dcaa55126c285fc6495f2dba8fa1d281ece0e6e96bedd13d7a6222ae94e51",
+        "solution/solve.sh": "2f4e74e10b6730a4d0725b48ed2436721abf8d5fbebb53581d7b54840278b438",
+        "task.toml": "72c4397c8be2e2cfe933a929a9a327d5f4e36796819cd208d8cdf4db6ed2cc12",
+        "tests/judge.py": "b9171b26b6aec01ea06933af8ce685dc1daa39db3d368797340198226d96f212",
+        "tests/test.sh": "5c593aaf7caf9b6b048229cd2f79d56411bca44f0e014267f8ba4a29a45a6aae"
+      },
+      "snapshot_sha256": "3d67c811a72e0b385c7232ed1384b9535e4d5c895ce689f928e2e184e0b070a5"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "rubric_id": "incident-postmortem-v1",
+  "deterministic_gate": "required",
+  "pass_threshold": 0.75,
+  "criteria": [
+    {
+      "id": "timeline_accuracy",
+      "description": "Accurately correlates deploy c9f2a1d, 24.5% peak, and rollback d4e5f6a.",
+      "weight": 0.5,
+      "max_score": 5
+    },
+    {
+      "id": "actionability",
+      "description": "Proposes concrete preventive engineering action items.",
+      "weight": 0.5,
+      "max_score": 5
+    }
+  ]
+}

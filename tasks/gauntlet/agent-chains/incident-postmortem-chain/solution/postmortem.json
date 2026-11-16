@@ -1,0 +1,6 @@
+{
+  "affected_service": "auth-proxy",
+  "faulty_commit": "c9f2a1d",
+  "peak_error_rate_pct": 24.5,
+  "rollback_commit": "d4e5f6a"
+}

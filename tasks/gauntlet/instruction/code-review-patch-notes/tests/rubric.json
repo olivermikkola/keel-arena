@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "rubric_id": "code-review-patch-v1",
+  "deterministic_gate": "advisory",
+  "pass_threshold": 0.75,
+  "criteria": [
+    {
+      "id": "defect_coverage",
+      "description": "Explains SQL injection, handle leak, and off-by-one slice with accurate fixes.",
+      "weight": 0.6,
+      "max_score": 5
+    },
+    {
+      "id": "constraint_adherence",
+      "description": "Follows exact headings, numbered severity tags, verdict line, and word budget.",
+      "weight": 0.4,
+      "max_score": 5
+    }
+  ]
+}

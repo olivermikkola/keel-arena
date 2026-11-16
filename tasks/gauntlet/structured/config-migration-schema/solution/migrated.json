@@ -1,0 +1,11 @@
+{
+  "allowed_origins": [
+    "https://admin.example",
+    "https://app.example"
+  ],
+  "port": 8443,
+  "rejected_origins": [
+    "http://insecure.example"
+  ],
+  "tls": true
+}

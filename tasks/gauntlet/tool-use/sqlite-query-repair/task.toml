@@ -1,0 +1,25 @@
+schema_version = "1.4"
+[metadata]
+category = "tool-use"
+difficulty = "medium"
+source = "original-keel-arena"
+split = "development"
+judge_mode = "deterministic"
+[agent]
+timeout_sec = 330
+network_mode = "allowlist"
+allowed_hosts = []
+[verifier]
+timeout_sec = 60
+user = "root"
+environment_mode = "separate"
+network_mode = "no-network"
+[environment]
+network_mode = "no-network"
+cpus = 1
+memory_mb = 512
+storage_mb = 1024
+workdir = "/workspace"
+[[artifacts]]
+source = "/workspace/report.json"
+destination = "report.json"

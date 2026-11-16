@@ -1,0 +1,93 @@
+{
+  "schema_version": 2,
+  "purpose": "demonstration",
+  "protocol": {
+    "harness_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "environment_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "sampling_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "budget": {
+      "max_steps": 12,
+      "max_output_tokens": 2048,
+      "timeout_seconds": 300
+    }
+  },
+  "hardware": {
+    "device_label": "Demo Edge APU (16 GB Unified)",
+    "cpu_model": "Demo x86_64 Edge SoC",
+    "ram_total_gb": 16.0
+  },
+  "tasks": {
+    "demo-coding": {"snapshot_sha256": "1111111111111111111111111111111111111111111111111111111111111111", "verifier_sha256": "2222222222222222222222222222222222222222222222222222222222222222", "split": "development", "suite": "coding", "judge_mode": "deterministic"},
+    "demo-tool": {"snapshot_sha256": "1111111111111111111111111111111111111111111111111111111111111111", "verifier_sha256": "2222222222222222222222222222222222222222222222222222222222222222", "split": "development", "suite": "tool-use", "judge_mode": "deterministic"},
+    "demo-adv": {"snapshot_sha256": "1111111111111111111111111111111111111111111111111111111111111111", "verifier_sha256": "2222222222222222222222222222222222222222222222222222222222222222", "split": "development", "suite": "adversarial", "judge_mode": "deterministic"},
+    "demo-chain": {"snapshot_sha256": "1111111111111111111111111111111111111111111111111111111111111111", "verifier_sha256": "2222222222222222222222222222222222222222222222222222222222222222", "split": "development", "suite": "agent-chains", "judge_mode": "hybrid"},
+    "demo-struct": {"snapshot_sha256": "1111111111111111111111111111111111111111111111111111111111111111", "verifier_sha256": "2222222222222222222222222222222222222222222222222222222222222222", "split": "development", "suite": "structured", "judge_mode": "deterministic"},
+    "demo-retr": {"snapshot_sha256": "1111111111111111111111111111111111111111111111111111111111111111", "verifier_sha256": "2222222222222222222222222222222222222222222222222222222222222222", "split": "development", "suite": "retrieval", "judge_mode": "deterministic"},
+    "demo-instr": {"snapshot_sha256": "1111111111111111111111111111111111111111111111111111111111111111", "verifier_sha256": "2222222222222222222222222222222222222222222222222222222222222222", "split": "development", "suite": "instruction", "judge_mode": "hybrid"}
+  },
+  "contestants": {
+    "demo-edge-4b": {
+      "model_revision_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "quantization": "Q4_K_M",
+      "harness": "keel",
+      "edge_profile": {
+        "device": "Demo Edge APU 16GB",
+        "weights_vram_gb": 2.9,
+        "kv_per_token_kb": 14.0,
+        "kv_pool_tokens": 160000,
+        "max_context_tokens": 32768,
+        "streams_tested": 4,
+        "speed_1_stream_tok_s": 28.0,
+        "speed_n_streams_tok_s": 54.0,
+        "ttft_seconds": 1.4,
+        "offload": "None (100% iGPU)",
+        "diagnostic_note": "Synthetic fixture: strong coding & tool-use; instruction constraint gap."
+      }
+    },
+    "demo-edge-2b": {
+      "model_revision_sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+      "quantization": "Q4_K_M",
+      "harness": "keel",
+      "edge_profile": {
+        "device": "Demo Edge APU 16GB",
+        "weights_vram_gb": 1.6,
+        "kv_per_token_kb": 10.2,
+        "kv_pool_tokens": 240000,
+        "max_context_tokens": 32768,
+        "streams_tested": 4,
+        "speed_1_stream_tok_s": 44.0,
+        "speed_n_streams_tok_s": 88.0,
+        "ttft_seconds": 0.7,
+        "offload": "None (100% iGPU)",
+        "diagnostic_note": "Synthetic fixture: fastest throughput; drops long-horizon chains."
+      }
+    }
+  },
+  "repetitions": 1,
+  "calibration": {
+    "judge_human_agreement_rate": 1.0,
+    "cohens_kappa": 1.0,
+    "reviewed_count": 4,
+    "override_count": 0
+  },
+  "pairwise": [
+    {"task": "demo-chain", "repetition": 0, "left": "demo-edge-2b", "right": "demo-edge-4b", "winner": "right", "position_consistent": true, "judge_model": "frontier-judge-demo", "rubric_sha256": "9999999999999999999999999999999999999999999999999999999999999999"},
+    {"task": "demo-instr", "repetition": 0, "left": "demo-edge-2b", "right": "demo-edge-4b", "winner": "tie", "position_consistent": true, "judge_model": "frontier-judge-demo", "rubric_sha256": "9999999999999999999999999999999999999999999999999999999999999999"}
+  ],
+  "attempts": [
+    {"task": "demo-coding", "contestant": "demo-edge-4b", "repetition": 0, "outcome": "solved", "wall_seconds": 12.4, "input_tokens": 900, "output_tokens": 220, "ttft_seconds": 1.3, "decode_tok_s": 28.5, "trajectory_sha256": null, "verifier_result_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+    {"task": "demo-tool", "contestant": "demo-edge-4b", "repetition": 0, "outcome": "solved", "wall_seconds": 14.1, "input_tokens": 1100, "output_tokens": 260, "ttft_seconds": 1.4, "decode_tok_s": 27.9, "trajectory_sha256": null, "verifier_result_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+    {"task": "demo-adv", "contestant": "demo-edge-4b", "repetition": 0, "outcome": "solved", "wall_seconds": 9.8, "input_tokens": 800, "output_tokens": 150, "ttft_seconds": 1.1, "decode_tok_s": 29.1, "trajectory_sha256": null, "verifier_result_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+    {"task": "demo-chain", "contestant": "demo-edge-4b", "repetition": 0, "outcome": "solved", "wall_seconds": 21.0, "input_tokens": 1800, "output_tokens": 410, "ttft_seconds": 1.6, "decode_tok_s": 27.2, "trajectory_sha256": null, "verifier_result_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "judge": {"rubric_sha256": "9999999999999999999999999999999999999999999999999999999999999999", "judge_model": "frontier-judge-demo", "score": 0.92, "passed": true, "calibrated": true, "deterministic_passed": true}},
+    {"task": "demo-struct", "contestant": "demo-edge-4b", "repetition": 0, "outcome": "solved", "wall_seconds": 11.2, "input_tokens": 850, "output_tokens": 190, "ttft_seconds": 1.2, "decode_tok_s": 28.4, "trajectory_sha256": null, "verifier_result_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+    {"task": "demo-retr", "contestant": "demo-edge-4b", "repetition": 0, "outcome": "solved", "wall_seconds": 18.5, "input_tokens": 3200, "output_tokens": 180, "ttft_seconds": 2.4, "decode_tok_s": 26.8, "trajectory_sha256": null, "verifier_result_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+    {"task": "demo-instr", "contestant": "demo-edge-4b", "repetition": 0, "outcome": "unsolved", "wall_seconds": 15.0, "input_tokens": 1000, "output_tokens": 310, "ttft_seconds": 1.5, "decode_tok_s": 27.5, "trajectory_sha256": null, "verifier_result_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "judge": {"rubric_sha256": "9999999999999999999999999999999999999999999999999999999999999999", "judge_model": "frontier-judge-demo", "score": 0.58, "passed": false, "calibrated": true, "deterministic_passed": false}},
+    {"task": "demo-coding", "contestant": "demo-edge-2b", "repetition": 0, "outcome": "solved", "wall_seconds": 7.5, "input_tokens": 920, "output_tokens": 230, "ttft_seconds": 0.7, "decode_tok_s": 44.5, "trajectory_sha256": null, "verifier_result_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},
+    {"task": "demo-tool", "contestant": "demo-edge-2b", "repetition": 0, "outcome": "solved", "wall_seconds": 8.4, "input_tokens": 1150, "output_tokens": 270, "ttft_seconds": 0.7, "decode_tok_s": 43.8, "trajectory_sha256": null, "verifier_result_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},
+    {"task": "demo-adv", "contestant": "demo-edge-2b", "repetition": 0, "outcome": "unsolved", "wall_seconds": 6.1, "input_tokens": 820, "output_tokens": 160, "ttft_seconds": 0.6, "decode_tok_s": 45.2, "trajectory_sha256": null, "verifier_result_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},
+    {"task": "demo-chain", "contestant": "demo-edge-2b", "repetition": 0, "outcome": "unsolved", "wall_seconds": 14.3, "input_tokens": 1950, "output_tokens": 480, "ttft_seconds": 0.9, "decode_tok_s": 42.1, "trajectory_sha256": null, "verifier_result_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "judge": {"rubric_sha256": "9999999999999999999999999999999999999999999999999999999999999999", "judge_model": "frontier-judge-demo", "score": 0.45, "passed": false, "calibrated": true, "deterministic_passed": false}},
+    {"task": "demo-struct", "contestant": "demo-edge-2b", "repetition": 0, "outcome": "solved", "wall_seconds": 6.8, "input_tokens": 880, "output_tokens": 200, "ttft_seconds": 0.7, "decode_tok_s": 44.0, "trajectory_sha256": null, "verifier_result_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},
+    {"task": "demo-retr", "contestant": "demo-edge-2b", "repetition": 0, "outcome": "solved", "wall_seconds": 11.2, "input_tokens": 3200, "output_tokens": 170, "ttft_seconds": 1.3, "decode_tok_s": 42.8, "trajectory_sha256": null, "verifier_result_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},
+    {"task": "demo-instr", "contestant": "demo-edge-2b", "repetition": 0, "outcome": "unsolved", "wall_seconds": 9.0, "input_tokens": 1020, "output_tokens": 290, "ttft_seconds": 0.8, "decode_tok_s": 43.9, "trajectory_sha256": null, "verifier_result_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "judge": {"rubric_sha256": "9999999999999999999999999999999999999999999999999999999999999999", "judge_model": "frontier-judge-demo", "score": 0.52, "passed": false, "calibrated": true, "deterministic_passed": false}}
+  ]
+}
