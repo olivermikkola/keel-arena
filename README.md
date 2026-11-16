@@ -1,114 +1,82 @@
 # Keel Arena
 
-Reproducible coding-agent benchmarks. Compare models inside the same harness,
-measure completed tasks, and preserve the evidence behind every result.
+[![CI](https://github.com/olivermikkola/keel-arena/actions/workflows/ci.yml/badge.svg)](https://github.com/olivermikkola/keel-arena/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)
+
+**Edge AI & coding-agent benchmarking suite.** Compare local models, quantizations, and agent harnesses inside identical isolated environments with deterministic checks, **blinded Frontier LLM judging + human calibration**, hardware/throughput profiling, and shareable SVG scorecards.
 
 **Public tooling. Private evaluations. Training stays downstream.**
 
-## Current status
+<table>
+<tr>
+<td width="52%"><img src="docs/overview-demo.svg" alt="Keel Arena synthetic demonstration overview card"></td>
+<td width="48%"><img src="docs/card-demo.svg" alt="Keel Arena synthetic demonstration contestant scorecard"></td>
+</tr>
+</table>
+<sub>Synthetic demonstration cards rendered from <code>examples/synthetic-gauntlet-results.json</code> (<code>purpose: "demonstration"</code>, not measured model results).</sub>
 
-Version 0.1 provides a dependency-free Python CLI for validating normalized results
-and comparing complete, matched task/repetition blocks. It reports solve rates,
-time, known token usage, and complementary successes between models.
-[Task-level reports](docs/metrics.md) add equal task weights, explicit pass@k
-cohorts and a readable `report --format markdown` view.
+## First 60 seconds
 
-Arena now also includes the **7-suite Edge Agentic Gauntlet**
-([edge-gauntlet.md](docs/edge-gauntlet.md)) covering `coding`, `tool-use`,
-`adversarial`, `agent-chains`, `structured`, `retrieval`, and `instruction`
-(16 curated public tasks total including `tasks/repair/`), **hardware auto-detection &
-`1->N` stream edge profiling** (`probe-edge`), **blinded Frontier LLM-as-a-Judge +
-position-swapped pairwise Elo + human calibration** ([frontier-judge.md](docs/frontier-judge.md)),
-one-command `init-study`, and **SVG scorecards / offline HTML dashboards**
-(`cards`, `report --format svg|html`).
-
-It also [imports Harbor 0.26.0 trial evidence](docs/harbor-import.md), checking
-explicit bindings and protected reward artifacts before normalizing results.
-The [Harbor Keel adapter](docs/keel-agent.md) launches a pinned private executable
-inside a backend task environment, with a bounded provider wrapper and private
-request/response evidence. Arena does not provision its own sandbox or train models. No real-model leaderboard or model improvement is claimed. The included
-fixtures are entirely synthetic and test reporting behavior only.
-
-## Try it
-
-Requires Python 3.11 or later. No installation, accounts, network, model server,
-containers or API credits are needed:
+Requires Python 3.11+ with **zero third-party dependencies** for validation, reporting, judging, hardware probing, and SVG/HTML cards (no containers, accounts, or API keys needed to try):
 
 ```sh
-python3 -m keel_arena validate examples/synthetic-results.json
-python3 -m keel_arena report examples/synthetic-results.json
+git clone https://github.com/olivermikkola/keel-arena.git && cd keel-arena
+
+python3 -m keel_arena list-suites        # see all 16 tasks across 7 agentic suites + repair
+python3 -m keel_arena probe-edge         # auto-detect CPU, RAM, GPU/Vulkan/CUDA, thermals
 python3 -m keel_arena validate examples/synthetic-gauntlet-results.json
 python3 -m keel_arena report examples/synthetic-gauntlet-results.json --format markdown
-python3 -m keel_arena list-suites
-python3 -m keel_arena probe-edge
-python3 -m unittest discover -s tests -v
-python3 scripts/check_publication.py
+python3 -m keel_arena cards examples/synthetic-gauntlet-results.json --out ./demo-cards
+python3 -m unittest discover -s tests -v && python3 scripts/check_publication.py
 ```
 
-The demonstration has three tasks and two fictional contestants. An infrastructure
-error excludes one task/repetition block for both contestants. Each solves one of
-the two remaining tasks; together they cover both. Those numbers describe a
-reporting fixture, not model performance. Unknown token counts remain `null`.
+Optional local install adds the `keel-arena` executable (`python3 -m pip install .`, or `python3 -m pip install '.[harbor]'` for Python 3.12+ with Harbor 0.26.0 container studies).
 
-An optional local install (`python3 -m pip install .`) adds `keel-arena`. This may
-fetch the pinned build backend; running directly from the checkout needs only
-the standard library. There is no published package release yet.
+## What it measures
+
+| Capability | Details | Guide |
+| --- | --- | --- |
+| **7-suite Edge Agentic Gauntlet** | 16 curated Harbor 1.4 tasks across `coding`, `tool-use`, `adversarial`, `agent-chains`, `structured`, `retrieval`, and `instruction` (`+ repair`) with separate offline verifiers | [edge-gauntlet.md](docs/edge-gauntlet.md) |
+| **Frontier LLM Judge & Calibration** | Blinded rubric evaluation (`temp=0`, injection-contained), position-swapped pairwise **Elo**, and post-test human overrides with agreement & Cohen's κ | [frontier-judge.md](docs/frontier-judge.md) |
+| **Edge Telemetry & Cards** | `1 → N` concurrent SSE stream throughput (`tok/s`), median/p95 TTFT, tokens-per-solve, hardware auto-detection, SVG scorecards, and offline HTML dashboard | [edge-gauntlet.md](docs/edge-gauntlet.md) |
+| **Matched Matrix & `pass@k`** | Excludes infrastructure-failed `(task, repetition)` blocks across all contestants, separates timeouts from infra errors, equal task weights, combinatorial `pass@k` | [metrics.md](docs/metrics.md) |
+| **Harbor 0.26.0 Isolation & ATIF** | Frozen studies with SHA-256 receipts, rotating order, thermal stops, bounded SSE proxy (`runtime.py`), and ATIF-v1.8 trace export | [studies.md](docs/studies.md) |
 
 ## Run a real study
 
-The [private study runner](docs/studies.md) freezes exact task/model/repetition
-bindings before any execution and runs them through Harbor with serial budgets,
-thermal guards, preserved evidence and verified resume. Start from
-`examples/study-template.json`; it requires your real private executable/model
-identities. No model calls or Docker builds occur merely by installing Arena.
-
-## Use private tasks and results
-
-Keep task banks, source snapshots, model identity manifests, raw trajectories,
-patches and verifier evidence outside this checkout. Ignored `private/`, `runs/`
-and `artifacts/` directories are available for local work, but ignoring a path
-cannot sanitize files copied elsewhere.
-
-Point Arena at a local normalized result file:
+Initialize a frozen `schema_version: 2` study in one command (auto-hashing your `keel` binary and optionally profiling local inference endpoints):
 
 ```sh
-python3 -m keel_arena validate "$ARENA_RESULT_FILE"
-python3 -m keel_arena report "$ARENA_RESULT_FILE" > "$ARENA_REPORT_FILE"
+python3 -m keel_arena init-study \
+  --suite gauntlet \
+  --contestant qwen-4b=openai/qwen4-4b@http://127.0.0.1:8080/v1\|Q4_K_M\|keel \
+  --contestant bonsai-9b=openai/bonsai-9b@http://127.0.0.1:8081/v1\|Q2_0\|keel \
+  --probe-edge \
+  --out "$PRIVATE_DIR/study.json"
+
+HARBOR_TELEMETRY=0 python3 -m keel_arena freeze-study "$PRIVATE_DIR/study.json" --out "$PRIVATE_STUDY_DIR"
+HARBOR_TELEMETRY=0 python3 -m keel_arena run-study "$PRIVATE_STUDY_DIR"
+python3 -m keel_arena cards "$PRIVATE_STUDY_DIR/results.json" --out "$PRIVATE_STUDY_DIR/cards"
 ```
 
-The reporting/import CLI reads local files and writes to stdout. It executes no commands from result input, loads no plugins, calls no providers
-and uploads nothing. Explicit execution through Harbor is a separate opt-in path. Reports remain private
-until you deliberately share them. They retain contestant identifiers and hashes,
-which can themselves be sensitive. There is no automatic public leaderboard.
+Start from `examples/study-template.json` if you prefer a hand-authored v1 matrix. Keep task banks, model manifests, raw traces, and study outputs **outside Git** (or inside ignored `private/`, `runs/`, and `artifacts/`). There is no automatic upload or public leaderboard.
 
 ## Where it fits
 
 | Project | Responsibility |
 | --- | --- |
-| Keel | Coding-agent harness and tool execution |
-| Keel Arena | Evaluation protocol, normalized evidence and comparisons |
-| LLM-lab or another private consumer | Training-data selection, post-training and model artifacts |
+| [Keel](https://github.com/olivermikkola/keel) / [Keel Desktop](https://github.com/olivermikkola/keel-desktop) | Coding-agent harness and local workspace |
+| **Keel Arena** | Evaluation protocol, 7-suite gauntlet, frontier LLM judge, hardware profiling, and scorecards |
+| `llm-lab` (or downstream consumer) | Training-data selection, SFT/DPO experiments, and model weights |
 
-The adapter also produces [validated private ATIF timelines](docs/trajectories.md),
-with exact native-request references and no invented tool observations.
+## Documentation
 
-A private consumer can use the versioned result contract to locate verified
-training-split trajectories in its own artifact store. Arena does not automatically
-turn failures into preference pairs or export evaluation tasks into training.
-
-The [original repair task pack](docs/task-pack.md) provides two development
-diagnostics with separate verifiers, broken/fixed controls and 43 grading cases.
-These public tasks are not a blind holdout.
-
-The [competitive research](docs/competitive-research.md) records the mechanisms
-selected from Harbor, SWE-bench, Inspect and Aider.
-
-See the [protocol](docs/protocol.md), [result contract](docs/results-v1.md),
-[downstream interface](docs/downstream.md), and [execution roadmap](docs/execution.md).
+- [Edge Gauntlet & Hardware Profiling](docs/edge-gauntlet.md) · [Frontier LLM Judge & Human Calibration](docs/frontier-judge.md)
+- [Frozen Studies](docs/studies.md) · [Harbor Keel Adapter](docs/keel-agent.md) · [Import Harbor Trials](docs/harbor-import.md)
+- [Task-Level Metrics & `pass@k`](docs/metrics.md) · [Result Contract](docs/results-v1.md) · [ATIF Trajectories](docs/trajectories.md)
+- [Original Repair Pack](docs/task-pack.md) · [Downstream Training Boundary](docs/downstream.md) · [Competitive Research](docs/competitive-research.md) · [Roadmap](docs/execution.md)
 
 ## Contribute
 
-MIT licensed. See [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENTS.md](AGENTS.md).
-Every commit and PR is public. Only original public source and synthetic fixtures
-belong here. Publication checks are heuristic safeguards and still require human
-diff review. No private repository history was imported.
+MIT licensed. See [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENTS.md](AGENTS.md). Every commit and PR is public; run `python3 scripts/check_publication.py` before pushing.
