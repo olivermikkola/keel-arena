@@ -1,0 +1,5 @@
+Service: Keel Edge Gateway
+Listen Port: 8443 (TLS 1.3 only)
+Memory Cap: 512MB RSS
+Owner: edge-team
+Storage: Append-only SQLite WAL inside local volume.

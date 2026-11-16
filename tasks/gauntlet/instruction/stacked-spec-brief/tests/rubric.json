@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "rubric_id": "stacked-spec-brief-v1",
+  "deterministic_gate": "required",
+  "pass_threshold": 0.75,
+  "criteria": [
+    {
+      "id": "constraint_fidelity",
+      "description": "Adheres to all 7 formatting, count, and negative constraints cleanly.",
+      "weight": 0.5,
+      "max_score": 5
+    },
+    {
+      "id": "technical_clarity",
+      "description": "Accurately summarizes the edge gateway architecture without filler.",
+      "weight": 0.5,
+      "max_score": 5
+    }
+  ]
+}

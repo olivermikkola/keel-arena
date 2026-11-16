@@ -1,0 +1,7 @@
+{
+  "release": "2.4.0",
+  "services": {
+    "auth": "2.4.0",
+    "billing": "2.4.1"
+  }
+}

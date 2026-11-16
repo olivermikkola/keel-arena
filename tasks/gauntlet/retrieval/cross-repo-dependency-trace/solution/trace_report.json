@@ -1,0 +1,11 @@
+{
+  "active_path": [
+    "gateway",
+    "auth-edge",
+    "token-broker",
+    "ledger-proxy",
+    "ledger-db"
+  ],
+  "deprecated_hop": "legacy-cache",
+  "offline_node": "decoy-bus"
+}

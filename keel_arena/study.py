@@ -69,10 +69,14 @@ def read_document(path):
 def freeze(settings, output):
     """Resolve exact configs and sources without creating a trial or model call."""
     Task, TrialConfig, _ = _sdk()
-    fields(settings, 'schema_version purpose split binary_path binary_sha256 tasks contestants '
-                     'repetitions budget sampling environment thermal_limit_c', 'study')
-    require(type(settings['schema_version']) is int and settings['schema_version'] == 1,
+    require(isinstance(settings, dict) and type(settings.get('schema_version')) is int,
             'unsupported study schema')
+    schema_version = settings['schema_version']
+    require(schema_version in (1, 2), 'unsupported study schema')
+    optional_study = 'task_metadata hardware' if schema_version == 2 else ''
+    fields(settings, 'schema_version purpose split binary_path binary_sha256 tasks contestants '
+                     'repetitions budget sampling environment thermal_limit_c', 'study',
+           optional=optional_study)
     fields(settings['budget'], 'max_steps max_output_tokens timeout_seconds', 'budget')
     fields(settings['sampling'], 'temperature top_p seed thinking context_tokens', 'sampling')
     fields(settings['environment'], 'type allow_agent_hosts', 'environment')
@@ -88,6 +92,7 @@ def freeze(settings, output):
     require(not output.exists(), 'study output must be new')
     require(isinstance(settings['tasks'], dict) and settings['tasks'], 'tasks required')
     require(isinstance(settings['contestants'], dict) and settings['contestants'], 'contestants required')
+    task_metadata = settings.get('task_metadata') or {}
     task_sources, tasks, workspaces = {}, {}, {}
     for name, path in settings['tasks'].items():
         require(identifier(name) and isinstance(path, str), 'invalid task identity')
@@ -102,24 +107,42 @@ def freeze(settings, output):
         verifier = _tree(task.paths.tests_dir, task.file_filter)
         task_sources[name] = {'path': str(source), 'snapshot_sha256': snapshot,
                               'verifier_sha256': verifier, 'task_checksum': task.checksum}
-        tasks[name] = {'snapshot_sha256': snapshot, 'verifier_sha256': verifier, 'split': settings['split']}
+        t_entry = {'snapshot_sha256': snapshot, 'verifier_sha256': verifier, 'split': settings['split']}
+        if schema_version == 2 and name in task_metadata:
+            meta = task_metadata[name]
+            if isinstance(meta, dict):
+                if meta.get('suite') is not None:
+                    t_entry['suite'] = meta['suite']
+                if meta.get('judge_mode') is not None:
+                    t_entry['judge_mode'] = meta['judge_mode']
+        tasks[name] = t_entry
     contestants = {}
+    optional_contestant = 'harness edge_profile agent_import_path agent_kwargs' if schema_version == 2 else ''
     for name, contestant in settings['contestants'].items():
         require(identifier(name), 'invalid contestant identity')
-        fields(contestant, 'model base_url model_revision_sha256 quantization api_key_env', 'contestant')
+        fields(contestant, 'model base_url model_revision_sha256 quantization api_key_env',
+               'contestant', optional=optional_contestant)
         key = contestant['api_key_env']
         if key is not None:
             import re
             require(isinstance(key, str) and re.fullmatch(r'[A-Z_][A-Z0-9_]{0,95}', key),
                     'API key must be an environment-variable name')
-        validate_config(dict(binary=str(binary), binary_sha256=settings['binary_sha256'],
-                             root='/workspace', home='/installed-agent/arena-home', logs='/logs/agent/run',
-                             model=contestant['model'], base_url=contestant['base_url'],
-                             max_model_requests=settings['budget']['max_steps'],
-                             max_output_tokens=settings['budget']['max_output_tokens'],
-                             timeout_seconds=settings['budget']['timeout_seconds'], **settings['sampling']))
-        contestants[name] = {k: contestant[k] for k in ('model_revision_sha256', 'quantization')}
-    plan = {'schema_version': 1, 'purpose': settings['purpose'], 'tasks': tasks,
+        agent_import = contestant.get('agent_import_path') or 'keel_arena.harbor_agent:KeelAgent'
+        if agent_import == 'keel_arena.harbor_agent:KeelAgent':
+            validate_config(dict(binary=str(binary), binary_sha256=settings['binary_sha256'],
+                                 root='/workspace', home='/installed-agent/arena-home', logs='/logs/agent/run',
+                                 model=contestant['model'], base_url=contestant['base_url'],
+                                 max_model_requests=settings['budget']['max_steps'],
+                                 max_output_tokens=settings['budget']['max_output_tokens'],
+                                 timeout_seconds=settings['budget']['timeout_seconds'], **settings['sampling']))
+        c_entry = {k: contestant[k] for k in ('model_revision_sha256', 'quantization')}
+        if schema_version == 2:
+            if contestant.get('harness') is not None:
+                c_entry['harness'] = contestant['harness']
+            if contestant.get('edge_profile') is not None:
+                c_entry['edge_profile'] = contestant['edge_profile']
+        contestants[name] = c_entry
+    plan = {'schema_version': schema_version, 'purpose': settings['purpose'], 'tasks': tasks,
             'contestants': contestants, 'repetitions': settings['repetitions'],
             'protocol': {'harness_revision': settings['binary_sha256'],
                          'environment_sha256': canonical_hash({'backend': HARBOR_VERSION,
@@ -128,6 +151,8 @@ def freeze(settings, output):
                              'code': _code_hashes()}),
                          'sampling_sha256': canonical_hash({'policy': settings['sampling'], 'seed_schedule': 'base-plus-repetition'}),
                          'budget': settings['budget']}}
+    if schema_version == 2 and settings.get('hardware') is not None:
+        plan['hardware'] = settings['hardware']
     from .results import validate_plan
     validate_plan(plan)
     bindings, configs = [], {}
@@ -141,20 +166,26 @@ def freeze(settings, output):
             for contestant_name in names[rotation:] + names[:rotation]:
                 contestant = settings['contestants'][contestant_name]
                 cell = f'{run_prefix}-{len(bindings):06d}'
+                agent_import = contestant.get('agent_import_path') or 'keel_arena.harbor_agent:KeelAgent'
+                if agent_import == 'keel_arena.harbor_agent:KeelAgent':
+                    kwargs = {'workspace': workspaces[name], 'binary_path': str(binary),
+                              'binary_sha256': settings['binary_sha256'],
+                              'max_model_requests': settings['budget']['max_steps'],
+                              'max_output_tokens': settings['budget']['max_output_tokens'],
+                              'timeout_seconds': settings['budget']['timeout_seconds'],
+                              **dict(settings['sampling'], seed=settings['sampling']['seed'] + repetition)}
+                else:
+                    kwargs = dict(contestant.get('agent_kwargs') or {})
                 config = TrialConfig(
                     task={'path': task_sources[name]['path']}, trial_name=cell,
                     trials_dir=output / 'trials',
-                    agent={'import_path': 'keel_arena.harbor_agent:KeelAgent',
+                    agent={'import_path': agent_import,
                            'model_name': contestant['model'], 'base_url': contestant['base_url'],
                            'model_api_key_name': contestant['api_key_env'] or 'ARENA_ANONYMOUS_API_KEY',
                            'env': {'ARENA_ANONYMOUS_API_KEY': ''} if contestant['api_key_env'] is None else {},
                            'extra_allowed_hosts': hosts,
                            'override_timeout_sec': settings['budget']['timeout_seconds'] + 15,
-                           'kwargs': {'workspace': workspaces[name], 'binary_path': str(binary), 'binary_sha256': settings['binary_sha256'],
-                                      'max_model_requests': settings['budget']['max_steps'],
-                                      'max_output_tokens': settings['budget']['max_output_tokens'],
-                                      'timeout_seconds': settings['budget']['timeout_seconds'],
-                                      **dict(settings['sampling'], seed=settings['sampling']['seed'] + repetition)}},
+                           'kwargs': kwargs},
                     environment={'type': 'docker'}, verifier={'disable': False})
                 serialized = config.model_dump(mode='json')
                 configs[cell] = serialized

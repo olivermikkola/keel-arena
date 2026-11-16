@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "tasks": {
+    "api-contract-recovery": {
+      "judge_mode": "deterministic",
+      "path": "gauntlet/tool-use/api-contract-recovery",
+      "suite": "tool-use",
+      "summary": "Adapt to auth/limit errors and paginate local service CLI"
+    },
+    "chronological-policy-override": {
+      "judge_mode": "deterministic",
+      "path": "gauntlet/retrieval/chronological-policy-override",
+      "suite": "retrieval",
+      "summary": "Trace chronological amendments across 12 memos and refuse absent facts"
+    },
+    "cli-pipeline-fix": {
+      "judge_mode": "deterministic",
+      "path": "gauntlet/coding/cli-pipeline-fix",
+      "suite": "coding",
+      "summary": "Multi-file UTC normalization and CLI pipeline repair"
+    },
+    "code-review-patch-notes": {
+      "judge_mode": "hybrid",
+      "path": "gauntlet/instruction/code-review-patch-notes",
+      "suite": "instruction",
+      "summary": "Patch review identifying 3 defects under strict word/heading constraints"
+    },
+    "config-check": {
+      "judge_mode": "deterministic",
+      "path": "repair/config-check",
+      "suite": "repair",
+      "summary": "Python bool/int confusion and strict config shape"
+    },
+    "config-migration-schema": {
+      "judge_mode": "deterministic",
+      "path": "gauntlet/structured/config-migration-schema",
+      "suite": "structured",
+      "summary": "Migrate legacy INI config into strict typed JSON schema"
+    },
+    "cross-repo-dependency-trace": {
+      "judge_mode": "deterministic",
+      "path": "gauntlet/retrieval/cross-repo-dependency-trace",
+      "suite": "retrieval",
+      "summary": "Trace active microservice chain across noisy shards"
+    },
+    "csv-total": {
+      "judge_mode": "deterministic",
+      "path": "repair/csv-total",
+      "suite": "repair",
+      "summary": "CSV quoting, ASCII integers, exact money arithmetic"
+    },
+    "incident-postmortem-chain": {
+      "judge_mode": "hybrid",
+      "path": "gauntlet/agent-chains/incident-postmortem-chain",
+      "suite": "agent-chains",
+      "summary": "Correlate CSV + JSONL logs into structured postmortem + narrative"
+    },
+    "injected-issue-triage": {
+      "judge_mode": "deterministic",
+      "path": "gauntlet/adversarial/injected-issue-triage",
+      "suite": "adversarial",
+      "summary": "Resist prompt-injection and fake system overrides in ticket data"
+    },
+    "invoice-normalization": {
+      "judge_mode": "deterministic",
+      "path": "gauntlet/structured/invoice-normalization",
+      "suite": "structured",
+      "summary": "Normalize messy CSV invoices with latest-wins deduplication"
+    },
+    "misleading-hint-trap": {
+      "judge_mode": "deterministic",
+      "path": "gauntlet/adversarial/misleading-hint-trap",
+      "suite": "adversarial",
+      "summary": "Ignore misleading debug notes and implement strict spec"
+    },
+    "release-readiness-chain": {
+      "judge_mode": "deterministic",
+      "path": "gauntlet/agent-chains/release-readiness-chain",
+      "suite": "agent-chains",
+      "summary": "Multi-step manifest, env, and verification script reconciliation"
+    },
+    "sqlite-query-repair": {
+      "judge_mode": "deterministic",
+      "path": "gauntlet/tool-use/sqlite-query-repair",
+      "suite": "tool-use",
+      "summary": "Recover from strict CLI SQLite tool errors to compute order metrics"
+    },
+    "stacked-spec-brief": {
+      "judge_mode": "hybrid",
+      "path": "gauntlet/instruction/stacked-spec-brief",
+      "suite": "instruction",
+      "summary": "7 stacked formatting/negative/factual constraints + LLM rubric"
+    },
+    "terminal-log-indexer": {
+      "judge_mode": "deterministic",
+      "path": "gauntlet/coding/terminal-log-indexer",
+      "suite": "coding",
+      "summary": "Greenfield CLI log indexer with strict JSON and filtering"
+    }
+  }
+}

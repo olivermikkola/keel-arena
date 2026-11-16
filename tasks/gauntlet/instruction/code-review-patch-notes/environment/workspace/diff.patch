@@ -1,0 +1,19 @@
+--- a/api.py
++++ b/api.py
+@@ -1,12 +1,14 @@
+ import sqlite3
++
+ def get_user(conn, name):
+-    return conn.execute("SELECT * FROM users WHERE name = ?", (name,)).fetchall()
++    return conn.execute(f"SELECT * FROM users WHERE name = '{name}'").fetchall()
++
+ def read_audit(path):
+-    with open(path, "r") as f:
+-        return f.read()
++    f = open(path, "r")
++    return f.read()
++
+ def paginate(items, page, size):
+     start = page * size
+-    return items[start:start + size]
++    return items[start:start + size + 1]

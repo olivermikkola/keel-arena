@@ -1,0 +1,5 @@
+ts,service,error_rate_pct
+2026-11-10T14:00Z,auth-proxy,0.2
+2026-11-10T14:05Z,auth-proxy,18.4
+2026-11-10T14:10Z,auth-proxy,24.5
+2026-11-10T14:15Z,auth-proxy,0.3

@@ -1,0 +1,4 @@
+2026-11-01T10:00:00Z INFO booted
+2026-11-01T10:05:00Z WARN cache miss
+bad line
+2026-11-01T10:10:00Z ERROR disk full

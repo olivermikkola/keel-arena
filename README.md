@@ -13,12 +13,21 @@ time, known token usage, and complementary successes between models.
 [Task-level reports](docs/metrics.md) add equal task weights, explicit pass@k
 cohorts and a readable `report --format markdown` view.
 
+Arena now also includes the **7-suite Edge Agentic Gauntlet**
+([edge-gauntlet.md](docs/edge-gauntlet.md)) covering `coding`, `tool-use`,
+`adversarial`, `agent-chains`, `structured`, `retrieval`, and `instruction`
+(16 curated public tasks total including `tasks/repair/`), **hardware auto-detection &
+`1->N` stream edge profiling** (`probe-edge`), **blinded Frontier LLM-as-a-Judge +
+position-swapped pairwise Elo + human calibration** ([frontier-judge.md](docs/frontier-judge.md)),
+one-command `init-study`, and **SVG scorecards / offline HTML dashboards**
+(`cards`, `report --format svg|html`).
+
 It also [imports Harbor 0.26.0 trial evidence](docs/harbor-import.md), checking
 explicit bindings and protected reward artifacts before normalizing results.
 The [Harbor Keel adapter](docs/keel-agent.md) launches a pinned private executable
 inside a backend task environment, with a bounded provider wrapper and private
 request/response evidence. Arena does not provision its own sandbox or train models. No real-model leaderboard or model improvement is claimed. The included
-fixture is entirely synthetic and tests reporting behavior only.
+fixtures are entirely synthetic and test reporting behavior only.
 
 ## Try it
 
@@ -28,6 +37,10 @@ containers or API credits are needed:
 ```sh
 python3 -m keel_arena validate examples/synthetic-results.json
 python3 -m keel_arena report examples/synthetic-results.json
+python3 -m keel_arena validate examples/synthetic-gauntlet-results.json
+python3 -m keel_arena report examples/synthetic-gauntlet-results.json --format markdown
+python3 -m keel_arena list-suites
+python3 -m keel_arena probe-edge
 python3 -m unittest discover -s tests -v
 python3 scripts/check_publication.py
 ```

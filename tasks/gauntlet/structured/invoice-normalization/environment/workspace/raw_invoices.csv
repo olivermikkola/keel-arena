@@ -1,0 +1,6 @@
+invoice_id,vendor,amount,updated_at
+INV-2,"North, LLC",$14.25,2026-10-01T10:00:00Z
+INV-1,"Alpha Co",USD 10.00,2026-10-01T08:00:00Z
+INV-1,"Alpha Co",USD 15.50,2026-10-01T12:00:00Z
+INV-3,"Euro Ltd",EUR 20.00,2026-10-01T09:00:00Z
+INV-4,"Credit Co",-5.00,2026-10-01T11:00:00Z

@@ -1,0 +1,20 @@
+{
+  "rejected_ids": [
+    "INV-3",
+    "INV-4"
+  ],
+  "valid": [
+    {
+      "amount_cents": 1550,
+      "invoice_id": "INV-1",
+      "updated_at": "2026-10-01T12:00:00Z",
+      "vendor": "Alpha Co"
+    },
+    {
+      "amount_cents": 1425,
+      "invoice_id": "INV-2",
+      "updated_at": "2026-10-01T10:00:00Z",
+      "vendor": "North, LLC"
+    }
+  ]
+}

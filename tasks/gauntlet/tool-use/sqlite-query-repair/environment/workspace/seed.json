@@ -1,0 +1,45 @@
+{
+  "items": [
+    {
+      "sku": "BK-1",
+      "category": "books",
+      "unit_cents": 1500
+    },
+    {
+      "sku": "BK-2",
+      "category": "books",
+      "unit_cents": 2200
+    },
+    {
+      "sku": "HW-1",
+      "category": "hardware",
+      "unit_cents": 4900
+    }
+  ],
+  "orders": [
+    {
+      "id": 1,
+      "sku": "BK-1",
+      "qty": 2,
+      "status": "completed"
+    },
+    {
+      "id": 2,
+      "sku": "HW-1",
+      "qty": 1,
+      "status": "completed"
+    },
+    {
+      "id": 3,
+      "sku": "BK-2",
+      "qty": 3,
+      "status": "cancelled"
+    },
+    {
+      "id": 4,
+      "sku": "BK-2",
+      "qty": 1,
+      "status": "completed"
+    }
+  ]
+}

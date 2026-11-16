@@ -1,0 +1,31 @@
+schema_version = "1.4"
+[metadata]
+category = "agent-chains"
+difficulty = "medium"
+source = "original-keel-arena"
+split = "development"
+judge_mode = "deterministic"
+[agent]
+timeout_sec = 330
+network_mode = "allowlist"
+allowed_hosts = []
+[verifier]
+timeout_sec = 60
+user = "root"
+environment_mode = "separate"
+network_mode = "no-network"
+[environment]
+network_mode = "no-network"
+cpus = 1
+memory_mb = 512
+storage_mb = 1024
+workdir = "/workspace"
+[[artifacts]]
+source = "/workspace/release_bundle.json"
+destination = "release_bundle.json"
+[[artifacts]]
+source = "/workspace/manifests/services.json"
+destination = "services.json"
+[[artifacts]]
+source = "/workspace/deploy/target.env"
+destination = "target.env"

@@ -1,0 +1,5 @@
+{
+  "audit_region": "eu-west-1",
+  "max_retry_attempts": 4,
+  "satellite_uplink_key": "unknown"
+}

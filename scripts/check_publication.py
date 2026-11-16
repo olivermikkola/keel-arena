@@ -9,12 +9,41 @@ ROOT = Path(__file__).resolve().parents[1]
 ALLOWED_FILES = {
     ".gitignore", "AGENTS.md", "README.md", "LICENSE", "CONTRIBUTING.md",
     "SECURITY.md", "pyproject.toml", ".github/pull_request_template.md",
+    "tasks/suites.json", "tasks/gauntlet/manifest.json",
 }
 ALLOWED_DIRS = {"keel_arena", "tests", "docs", "examples", "scripts", ".github/workflows", "tasks/repair"}
 ALLOWED_DIRS |= {
     f"tasks/repair/{task}{part}"
     for task in ("config-check", "csv-total")
     for part in ("", "/environment", "/environment/workspace", "/tests", "/solution")
+}
+GAUNTLET_TASKS = {
+    "coding": ("cli-pipeline-fix", "terminal-log-indexer"),
+    "tool-use": ("sqlite-query-repair", "api-contract-recovery"),
+    "adversarial": ("injected-issue-triage", "misleading-hint-trap"),
+    "agent-chains": ("release-readiness-chain", "incident-postmortem-chain"),
+    "structured": ("invoice-normalization", "config-migration-schema"),
+    "retrieval": ("chronological-policy-override", "cross-repo-dependency-trace"),
+    "instruction": ("stacked-spec-brief", "code-review-patch-notes"),
+}
+ALLOWED_DIRS |= {
+    f"tasks/gauntlet/{suite}/{task}{part}"
+    for suite, names in GAUNTLET_TASKS.items()
+    for task in names
+    for part in (
+        "",
+        "/environment",
+        "/environment/workspace",
+        "/environment/workspace/changelogs",
+        "/environment/workspace/manifests",
+        "/environment/workspace/deploy",
+        "/environment/workspace/checks",
+        "/environment/workspace/incidents",
+        "/environment/workspace/docs",
+        "/environment/workspace/traces",
+        "/tests",
+        "/solution",
+    )
 }
 PATTERNS = [
     # Values are never printed. Split pattern literals avoid self-matches.
@@ -31,7 +60,10 @@ def inspect(path, content):
     parent = relative.parent.as_posix()
     if path not in ALLOWED_FILES and parent not in ALLOWED_DIRS:
         return "path outside publication allowlist"
-    if relative.suffix not in {"", ".py", ".md", ".json", ".toml", ".yml", ".sh"} and path != '.gitignore':
+    allowed_suffixes = {"", ".py", ".md", ".json", ".toml", ".yml", ".sh", ".txt", ".csv", ".jsonl", ".ini", ".patch"}
+    if path.startswith("tasks/gauntlet/"):
+        allowed_suffixes |= {".env", ".log"}
+    if relative.suffix not in allowed_suffixes and path != '.gitignore':
         return "unreviewed file type"
     if len(content) > 256 * 1024:
         return "file exceeds public source size limit"
