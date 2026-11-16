@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "keel-arena"
 version = "0.1.0"
-description = "Reproducible coding-agent benchmark result validation and comparison"
+description = "Edge AI and coding-agent benchmarking suite with 7-suite gauntlet, frontier LLM judge, hardware profiling, and SVG scorecards"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"

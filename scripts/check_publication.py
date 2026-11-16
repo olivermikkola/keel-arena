@@ -63,6 +63,8 @@ def inspect(path, content):
     allowed_suffixes = {"", ".py", ".md", ".json", ".toml", ".yml", ".sh", ".txt", ".csv", ".jsonl", ".ini", ".patch"}
     if path.startswith("tasks/gauntlet/"):
         allowed_suffixes |= {".env", ".log"}
+    if path in {"docs/overview-demo.svg", "docs/card-demo.svg"}:
+        allowed_suffixes.add(".svg")
     if relative.suffix not in allowed_suffixes and path != '.gitignore':
         return "unreviewed file type"
     if len(content) > 256 * 1024:

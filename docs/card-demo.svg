@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="791" viewBox="0 0 800 791">
+<defs>
+  <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" stop-color="#34d399"/>
+    <stop offset="50%" stop-color="#facc15"/>
+    <stop offset="100%" stop-color="#f472b6"/>
+  </linearGradient>
+  <style>
+    .bg { fill: #0b0f17; }
+    .tile { fill: #131926; stroke: #242f45; stroke-width: 1.5; }
+    .muted { fill: #94a3b8; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; }
+    .title { fill: #f8fafc; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; font-weight: 800; }
+  </style>
+</defs>
+<rect width="800" height="791" rx="18" class="bg"/>
+<rect x="0" y="0" width="800" height="5" fill="url(#accent)"/>
+<text x="36" y="54" font-size="34" class="title">demo-edge-4b</text>
+<text x="36" y="80" font-size="15" class="muted">Q4_K_M · harness: keel</text>
+<text x="640" y="64" text-anchor="end" font-size="22" class="muted">#1</text>
+<text x="720" y="72" text-anchor="middle" font-size="52" font-weight="900" fill="#4ade80" font-family="ui-sans-serif, system-ui, sans-serif">A</text>
+<text x="720" y="94" text-anchor="middle" font-size="11" letter-spacing="1.4" fill="#4ade80" font-family="ui-sans-serif, system-ui, sans-serif">AGENTIC GRADE</text>
+<text x="36" y="156" font-size="58" font-weight="900" fill="#4ade80" font-family="ui-sans-serif, system-ui, sans-serif">85.7%</text>
+<text x="36" y="182" font-size="13" letter-spacing="1.4" class="muted">ARENA SCORE · 6/7 SOLVED · 7 SUITES</text>
+<rect x="36" y="204" width="172" height="66" rx="8" class="tile"/>
+<text x="122.0" y="225" text-anchor="middle" font-size="11" letter-spacing="1" class="muted">ADVERSARIAL</text>
+<text x="122.0" y="250" text-anchor="middle" font-size="22" font-weight="800" fill="#4ade80" font-family="ui-sans-serif, system-ui, sans-serif">100.0%</text>
+<rect x="50" y="258" width="144" height="5" rx="2.5" fill="#1e293b"/>
+<rect x="50" y="258" width="144" height="5" rx="2.5" fill="#4ade80"/>
+<rect x="220" y="204" width="172" height="66" rx="8" class="tile"/>
+<text x="306.0" y="225" text-anchor="middle" font-size="11" letter-spacing="1" class="muted">AGENT CHAINS</text>
+<text x="306.0" y="250" text-anchor="middle" font-size="22" font-weight="800" fill="#4ade80" font-family="ui-sans-serif, system-ui, sans-serif">100.0%</text>
+<rect x="234" y="258" width="144" height="5" rx="2.5" fill="#1e293b"/>
+<rect x="234" y="258" width="144" height="5" rx="2.5" fill="#4ade80"/>
+<rect x="404" y="204" width="172" height="66" rx="8" class="tile"/>
+<text x="490.0" y="225" text-anchor="middle" font-size="11" letter-spacing="1" class="muted">CODING</text>
+<text x="490.0" y="250" text-anchor="middle" font-size="22" font-weight="800" fill="#4ade80" font-family="ui-sans-serif, system-ui, sans-serif">100.0%</text>
+<rect x="418" y="258" width="144" height="5" rx="2.5" fill="#1e293b"/>
+<rect x="418" y="258" width="144" height="5" rx="2.5" fill="#4ade80"/>
+<rect x="588" y="204" width="172" height="66" rx="8" class="tile"/>
+<text x="674.0" y="225" text-anchor="middle" font-size="11" letter-spacing="1" class="muted">INSTRUCTION</text>
+<text x="674.0" y="250" text-anchor="middle" font-size="22" font-weight="800" fill="#f87171" font-family="ui-sans-serif, system-ui, sans-serif">0.0%</text>
+<rect x="602" y="258" width="144" height="5" rx="2.5" fill="#1e293b"/>
+<rect x="602" y="258" width="0" height="5" rx="2.5" fill="#f87171"/>
+<rect x="36" y="282" width="172" height="66" rx="8" class="tile"/>
+<text x="122.0" y="303" text-anchor="middle" font-size="11" letter-spacing="1" class="muted">RETRIEVAL</text>
+<text x="122.0" y="328" text-anchor="middle" font-size="22" font-weight="800" fill="#4ade80" font-family="ui-sans-serif, system-ui, sans-serif">100.0%</text>
+<rect x="50" y="336" width="144" height="5" rx="2.5" fill="#1e293b"/>
+<rect x="50" y="336" width="144" height="5" rx="2.5" fill="#4ade80"/>
+<rect x="220" y="282" width="172" height="66" rx="8" class="tile"/>
+<text x="306.0" y="303" text-anchor="middle" font-size="11" letter-spacing="1" class="muted">STRUCTURED</text>
+<text x="306.0" y="328" text-anchor="middle" font-size="22" font-weight="800" fill="#4ade80" font-family="ui-sans-serif, system-ui, sans-serif">100.0%</text>
+<rect x="234" y="336" width="144" height="5" rx="2.5" fill="#1e293b"/>
+<rect x="234" y="336" width="144" height="5" rx="2.5" fill="#4ade80"/>
+<rect x="404" y="282" width="172" height="66" rx="8" class="tile"/>
+<text x="490.0" y="303" text-anchor="middle" font-size="11" letter-spacing="1" class="muted">TOOL USE</text>
+<text x="490.0" y="328" text-anchor="middle" font-size="22" font-weight="800" fill="#4ade80" font-family="ui-sans-serif, system-ui, sans-serif">100.0%</text>
+<rect x="418" y="336" width="144" height="5" rx="2.5" fill="#1e293b"/>
+<rect x="418" y="336" width="144" height="5" rx="2.5" fill="#4ade80"/>
+<rect x="36" y="374" width="234" height="56" rx="8" class="tile"/>
+<text x="48" y="394" font-size="10" letter-spacing="1" class="muted">SPEED 1→N STREAMS</text>
+<text x="48" y="417" font-size="16" class="title">28 → 54 tok/s</text>
+<rect x="283" y="374" width="234" height="56" rx="8" class="tile"/>
+<text x="295" y="394" font-size="10" letter-spacing="1" class="muted">TTFT</text>
+<text x="295" y="417" font-size="16" class="title">1.40 s</text>
+<rect x="530" y="374" width="234" height="56" rx="8" class="tile"/>
+<text x="542" y="394" font-size="10" letter-spacing="1" class="muted">WEIGHTS MEM</text>
+<text x="542" y="417" font-size="16" class="title">2.9 GB</text>
+<rect x="36" y="440" width="234" height="56" rx="8" class="tile"/>
+<text x="48" y="460" font-size="10" letter-spacing="1" class="muted">KV POOL</text>
+<text x="48" y="483" font-size="16" class="title">160K tok</text>
+<rect x="283" y="440" width="234" height="56" rx="8" class="tile"/>
+<text x="295" y="460" font-size="10" letter-spacing="1" class="muted">MAX CONTEXT</text>
+<text x="295" y="483" font-size="16" class="title">33K tok</text>
+<rect x="530" y="440" width="234" height="56" rx="8" class="tile"/>
+<text x="542" y="460" font-size="10" letter-spacing="1" class="muted">TOKENS / SOLVE</text>
+<text x="542" y="483" font-size="16" class="title">1,895</text>
+<rect x="36" y="506" width="234" height="56" rx="8" class="tile"/>
+<text x="48" y="526" font-size="10" letter-spacing="1" class="muted">KV PER TOKEN</text>
+<text x="48" y="549" font-size="16" class="title">14.0 KB</text>
+<rect x="283" y="506" width="234" height="56" rx="8" class="tile"/>
+<text x="295" y="526" font-size="10" letter-spacing="1" class="muted">DEVICE</text>
+<text x="295" y="549" font-size="16" class="title">Demo Edge APU 16GB</text>
+<rect x="530" y="506" width="234" height="56" rx="8" class="tile"/>
+<text x="542" y="526" font-size="10" letter-spacing="1" class="muted">OFFLOAD</text>
+<text x="542" y="549" font-size="16" class="title">None (100% iGPU)</text>
+<line x1="38" y1="586" x2="38" y2="614" stroke="#facc15" stroke-width="3"/>
+<text x="50" y="605" font-size="13" class="muted">Synthetic fixture: strong coding &amp; tool-use; instruction constraint gap.</text>
+<text x="36" y="771" font-size="11" class="muted">keel-arena v2 · Frontier LLM + Human Calibrated (100% agree) · sha256:416242447301</text>
+</svg>
