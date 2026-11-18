@@ -27,14 +27,25 @@ def _trunc(text, max_len=28):
 
 def _grade_color(rate):
     if rate is None:
-        return "#94a3b8"
+        return "#8ca3a0"
     if rate >= 0.85:
-        return "#4ade80"
+        return "#76dfc2"
     if rate >= 0.70:
-        return "#facc15"
+        return "#36b394"
     if rate >= 0.50:
-        return "#fb923c"
-    return "#f87171"
+        return "#e5a95e"
+    return "#dc7648"
+
+
+def _sail_mark_svg(x, y, size=34):
+    """Inline canonical Keel Sail mark positioned at (x, y) in a 512-unit viewBox."""
+    scale = size / 512.0
+    return (
+        f'<g transform="translate({x} {y}) scale({scale:.5f})">'
+        '<path fill="#dc7648" d="M86 426C214 357 316 367 426 391V252C418 337 231 336 86 426Z"/>'
+        '<path fill="#36b394" d="M86 426L426 86V252C426 328 304 324 203 367C157 386 118 408 86 426Z"/>'
+        '</g>'
+    )
 
 
 def _ranked_contestants(report):
@@ -98,23 +109,24 @@ def render_overview_svg(report):
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
         '<defs>',
         '  <linearGradient id="topbar" x1="0%" y1="0%" x2="100%" y2="0%">',
-        '    <stop offset="0%" stop-color="#38bdf8"/>',
-        '    <stop offset="50%" stop-color="#facc15"/>',
-        '    <stop offset="100%" stop-color="#f472b6"/>',
+        '    <stop offset="0%" stop-color="#76dfc2"/>',
+        '    <stop offset="55%" stop-color="#36b394"/>',
+        '    <stop offset="100%" stop-color="#dc7648"/>',
         '  </linearGradient>',
         '  <style>',
-        '    .bg { fill: #0b0f17; }',
-        '    .panel { fill: #131926; stroke: #242f45; stroke-width: 1.5; }',
-        '    .muted { fill: #94a3b8; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; }',
-        '    .title { fill: #f8fafc; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; font-weight: 800; }',
-        '    .mono { fill: #cbd5e1; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }',
+        '    .bg { fill: #0a1112; }',
+        '    .panel { fill: #101a1c; stroke: #22363a; stroke-width: 1.5; }',
+        '    .muted { fill: #8ca3a0; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; }',
+        '    .title { fill: #f7f3e9; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; font-weight: 800; }',
+        '    .mono { fill: #eef4f2; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }',
         '  </style>',
         '</defs>',
         f'<rect width="{width}" height="{height}" rx="18" class="bg"/>',
         f'<rect x="0" y="0" width="{width}" height="5" fill="url(#topbar)"/>',
+        _sail_mark_svg(width - 82, 34, 44),
         '<text x="40" y="46" font-size="13" letter-spacing="2" class="muted">KEEL ARENA · EDGE AGENTIC BENCHMARK · '
         f'{_esc(report["purpose"].upper())} · {len(ranked)} CONTESTANTS</text>',
-        '<text x="40" y="92" font-size="40" class="title">Keel <tspan fill="#facc15">Arena</tspan></text>',
+        '<text x="40" y="92" font-size="40" class="title">Keel <tspan fill="#36b394">Arena</tspan></text>',
         f'<text x="40" y="124" font-size="16" class="muted">Matched tasks: {report["tasks_with_matched_attempts"]}/{report["independent_tasks"]} · '
         f'Matched blocks: {report["matched_blocks"]}/{report["planned_blocks"]} · {_esc(_judge_summary_label(report))}</text>',
     ]
@@ -131,7 +143,7 @@ def render_overview_svg(report):
         label = SUITE_LABELS.get(suite, suite.upper())
         parts.append(f'<rect x="{sx}" y="{sy}" width="{col_w}" height="64" rx="10" class="panel"/>')
         parts.append(f'<text x="{sx + col_w / 2}" y="{sy + 24}" text-anchor="middle" font-size="11" letter-spacing="1.2" class="muted">{_esc(label)}</text>')
-        parts.append(f'<text x="{sx + col_w / 2}" y="{sy + 48}" text-anchor="middle" font-size="22" class="title">{sdata["tasks"]} <tspan font-size="13" font-weight="400" fill="#94a3b8">tasks</tspan></text>')
+        parts.append(f'<text x="{sx + col_w / 2}" y="{sy + 48}" text-anchor="middle" font-size="22" class="title">{sdata["tasks"]} <tspan font-size="13" font-weight="400" fill="#8ca3a0">tasks</tspan></text>')
 
     y = y + suite_rows * 76 + 22
     parts.append(f'<text x="40" y="{y}" font-size="12" letter-spacing="1.6" class="muted">LEADERBOARD · TASK-MEAN SOLVE RATE · GRADE</text>')
@@ -147,11 +159,11 @@ def render_overview_svg(report):
         tok_s = row.get("mean_decode_tok_s") or ep.get("speed_1_stream_tok_s")
         speed_txt = f"{tok_s:.1f} tok/s" if tok_s is not None else "speed unknown"
         parts.append(f'<rect x="40" y="{y}" width="780" height="54" rx="10" class="panel"/>')
-        parts.append(f'<circle cx="70" cy="{y + 27}" r="14" fill="#1e293b" stroke="{color}" stroke-width="2"/>')
+        parts.append(f'<circle cx="70" cy="{y + 27}" r="14" fill="#162426" stroke="{color}" stroke-width="2"/>')
         parts.append(f'<text x="70" y="{y + 32}" text-anchor="middle" font-size="13" class="title">{rank}</text>')
         parts.append(f'<text x="100" y="{y + 25}" font-size="17" class="title">{_esc(_trunc(name, 26))}</text>')
         parts.append(f'<text x="100" y="{y + 43}" font-size="12" class="muted">{_esc(quant)} · {_esc(harness)} · {_esc(speed_txt)}</text>')
-        parts.append(f'<rect x="440" y="{y + 22}" width="210" height="10" rx="5" fill="#1e293b"/>')
+        parts.append(f'<rect x="440" y="{y + 22}" width="210" height="10" rx="5" fill="#162426"/>')
         parts.append(f'<rect x="440" y="{y + 22}" width="{bar_w}" height="10" rx="5" fill="{color}"/>')
         parts.append(f'<text x="735" y="{y + 33}" text-anchor="end" font-size="20" font-weight="800" fill="{color}" font-family="ui-sans-serif, system-ui, sans-serif">{_fmt_rate(rate)}</text>')
         parts.append(f'<text x="795" y="{y + 33}" text-anchor="end" font-size="16" font-weight="800" fill="{color}" font-family="ui-sans-serif, system-ui, sans-serif">{_esc(row.get("grade", "N/A"))}</text>')
@@ -199,19 +211,20 @@ def render_contestant_card_svg(report, contestant_name):
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
         '<defs>',
         '  <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">',
-        '    <stop offset="0%" stop-color="#34d399"/>',
-        '    <stop offset="50%" stop-color="#facc15"/>',
-        '    <stop offset="100%" stop-color="#f472b6"/>',
+        '    <stop offset="0%" stop-color="#76dfc2"/>',
+        '    <stop offset="55%" stop-color="#36b394"/>',
+        '    <stop offset="100%" stop-color="#dc7648"/>',
         '  </linearGradient>',
         '  <style>',
-        '    .bg { fill: #0b0f17; }',
-        '    .tile { fill: #131926; stroke: #242f45; stroke-width: 1.5; }',
-        '    .muted { fill: #94a3b8; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; }',
-        '    .title { fill: #f8fafc; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; font-weight: 800; }',
+        '    .bg { fill: #0a1112; }',
+        '    .tile { fill: #101a1c; stroke: #22363a; stroke-width: 1.5; }',
+        '    .muted { fill: #8ca3a0; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; }',
+        '    .title { fill: #f7f3e9; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; font-weight: 800; }',
         '  </style>',
         '</defs>',
         f'<rect width="{width}" height="{height}" rx="18" class="bg"/>',
         f'<rect x="0" y="0" width="{width}" height="5" fill="url(#accent)"/>',
+        _sail_mark_svg(width - 66, height - 48, 28),
         f'<text x="36" y="54" font-size="34" class="title">{_esc(_trunc(contestant_name, 26))}</text>',
         f'<text x="36" y="80" font-size="15" class="muted">{_esc(quant)} · harness: {_esc(harness)}</text>',
         f'<text x="640" y="64" text-anchor="end" font-size="22" class="muted">#{rank}</text>',
@@ -237,7 +250,7 @@ def render_contestant_card_svg(report, contestant_name):
         parts.append(f'<rect x="{tx}" y="{ty}" width="{tile_w}" height="66" rx="8" class="tile"/>')
         parts.append(f'<text x="{tx + tile_w / 2}" y="{ty + 21}" text-anchor="middle" font-size="11" letter-spacing="1" class="muted">{_esc(label)}</text>')
         parts.append(f'<text x="{tx + tile_w / 2}" y="{ty + 46}" text-anchor="middle" font-size="22" font-weight="800" fill="{s_col}" font-family="ui-sans-serif, system-ui, sans-serif">{_fmt_rate(s_rate)}</text>')
-        parts.append(f'<rect x="{tx + 14}" y="{ty + 54}" width="{tile_w - 28}" height="5" rx="2.5" fill="#1e293b"/>')
+        parts.append(f'<rect x="{tx + 14}" y="{ty + 54}" width="{tile_w - 28}" height="5" rx="2.5" fill="#162426"/>')
         parts.append(f'<rect x="{tx + 14}" y="{ty + 54}" width="{bar_w}" height="5" rx="2.5" fill="{s_col}"/>')
 
     # 9-tile Edge telemetry grid
@@ -296,7 +309,7 @@ def render_contestant_card_svg(report, contestant_name):
             diag = (f"Strongest: {SUITE_LABELS.get(best[0], best[0])} ({_fmt_rate(best[1])}); "
                     f"weakest: {SUITE_LABELS.get(worst[0], worst[0])} ({_fmt_rate(worst[1])}).")
     diag = diag or f"Matched {row['matched_solved']}/{row['matched_attempts']} attempts across {report['independent_tasks']} tasks."
-    parts.append(f'<line x1="38" y1="{y}" x2="38" y2="{y + 28}" stroke="#facc15" stroke-width="3"/>')
+    parts.append(f'<line x1="38" y1="{y}" x2="38" y2="{y + 28}" stroke="#dc7648" stroke-width="3"/>')
     parts.append(f'<text x="50" y="{y + 19}" font-size="13" class="muted">{_esc(_trunc(diag, 88))}</text>')
     parts.append(f'<text x="36" y="{height - 20}" font-size="11" class="muted">keel-arena v{report["schema_version"]} · '
                  f'{_esc(_judge_summary_label(report))} · sha256:{report["result_sha256"][:12]}</text>')
@@ -327,13 +340,13 @@ def render_dashboard_html(report):
             cy = 205 - (acc / 100.0) * 165
             col = _grade_color(acc / 100.0)
             dots.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="6" fill="{col}"/>')
-            dots.append(f'<text x="{cx + 9:.1f}" y="{cy + 4:.1f}" font-size="11" fill="#e2e8f0">{_esc(_trunc(name, 18))}</text>')
+            dots.append(f'<text x="{cx + 9:.1f}" y="{cy + 4:.1f}" font-size="11" fill="#eef4f2">{_esc(_trunc(name, 18))}</text>')
         pareto_svg = (
-            '<svg viewBox="0 0 540 240" width="100%" style="max-width:540px;background:#0f172a;border-radius:10px;border:1px solid #242f45">'
-            '<line x1="55" y1="205" x2="495" y2="205" stroke="#334155"/>'
-            '<line x1="55" y1="30" x2="55" y2="205" stroke="#334155"/>'
-            '<text x="275" y="230" text-anchor="middle" font-size="11" fill="#94a3b8">Decode Speed (tok/s)</text>'
-            '<text x="16" y="120" text-anchor="middle" font-size="11" fill="#94a3b8" transform="rotate(-90 16 120)">Accuracy (%)</text>'
+            '<svg viewBox="0 0 540 240" width="100%" style="max-width:540px;background:#101a1c;border-radius:10px;border:1px solid #22363a">'
+            '<line x1="55" y1="205" x2="495" y2="205" stroke="#2a4145"/>'
+            '<line x1="55" y1="30" x2="55" y2="205" stroke="#2a4145"/>'
+            '<text x="275" y="230" text-anchor="middle" font-size="11" fill="#8ca3a0">Decode Speed (tok/s)</text>'
+            '<text x="16" y="120" text-anchor="middle" font-size="11" fill="#8ca3a0" transform="rotate(-90 16 120)">Accuracy (%)</text>'
             + "".join(dots)
             + "</svg>"
         )
@@ -406,23 +419,23 @@ def render_dashboard_html(report):
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Keel Arena Report</title>
 <style>
-body{{margin:0;padding:24px;background:#0b0f17;color:#e2e8f0;font-family:ui-sans-serif,system-ui,-apple-system,sans-serif}}
+body{{margin:0;padding:24px;background:#0a1112;color:#eef4f2;font-family:ui-sans-serif,system-ui,-apple-system,sans-serif}}
 .wrap{{max-width:1160px;margin:0 auto}}
-h1,h2,h3{{margin:0 0 12px;color:#f8fafc}}
-.meta{{color:#94a3b8;margin-bottom:20px;font-size:14px}}
+h1,h2,h3{{margin:0 0 12px;color:#f7f3e9}}
+.meta{{color:#8ca3a0;margin-bottom:20px;font-size:14px}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin:18px 0}}
-.card{{background:#131926;border:1px solid #242f45;border-radius:12px;padding:16px}}
-.card h3 span{{color:#94a3b8;font-size:12px;font-weight:400}}
-table{{width:100%;border-collapse:collapse;background:#131926;border:1px solid #242f45;border-radius:10px;overflow:hidden;margin:14px 0}}
-th,td{{padding:10px 12px;border-bottom:1px solid #1e293b;text-align:left;font-size:13px}}
-th{{background:#0f172a;color:#94a3b8;font-weight:600}}
+.card{{background:#101a1c;border:1px solid #22363a;border-radius:12px;padding:16px}}
+.card h3 span{{color:#8ca3a0;font-size:12px;font-weight:400}}
+table{{width:100%;border-collapse:collapse;background:#101a1c;border:1px solid #22363a;border-radius:10px;overflow:hidden;margin:14px 0}}
+th,td{{padding:10px 12px;border-bottom:1px solid #1a2b2e;text-align:left;font-size:13px}}
+th{{background:#162426;color:#8ca3a0;font-weight:600}}
 .bar-row{{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:12px}}
-.bar-lbl{{width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#cbd5e1}}
-.bar-track{{flex:1;height:8px;background:#1e293b;border-radius:4px;overflow:hidden}}
+.bar-lbl{{width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#eef4f2}}
+.bar-track{{flex:1;height:8px;background:#162426;border-radius:4px;overflow:hidden}}
 .bar-fill{{height:100%;border-radius:4px}}
 .bar-val{{width:48px;text-align:right;font-variant-numeric:tabular-nums}}
 </style></head><body><div class="wrap">
-<h1>Keel <span style="color:#facc15">Arena</span></h1>
+<h1>Keel <span style="color:#36b394">Arena</span></h1>
 <div class="meta">Purpose: <strong>{_esc(report['purpose'])}</strong> · Tasks: {report['independent_tasks']} ·
 Matched blocks: {report['matched_blocks']}/{report['planned_blocks']} · Judge: {_esc(_judge_summary_label(report))} ·
 <code>sha256:{report['result_sha256'][:12]}</code></div>
