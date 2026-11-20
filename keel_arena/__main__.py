@@ -44,6 +44,7 @@ def main(argv=None):
             "judge-pairwise",
             "calibrate",
             "cards",
+            "compare-keel-mobile",
         ),
     )
     parser.add_argument("result", nargs="?", help="path to input JSON file or directory")
@@ -74,11 +75,19 @@ def main(argv=None):
     parser.add_argument("--overrides", help="path to human calibration overrides JSON")
     parser.add_argument("--results", help="optional results JSON to update during calibrate")
     parser.add_argument("--seed", type=int, default=0, help="judge RNG seed")
+    # compare-keel-mobile options
+    parser.add_argument("--against", help="right-hand saved Keel Mobile run for compare-keel-mobile")
+    parser.add_argument("--suites", help="comma-separated suites to compare (default: every suite in both runs)")
+    parser.add_argument("--left-setup", action="append", default=[], help="declared left setup key=value")
+    parser.add_argument("--right-setup", action="append", default=[], help="declared right setup key=value")
+    parser.add_argument("--left-label", help="display name for the left run")
+    parser.add_argument("--right-label", help="display name for the right run")
     args = parser.parse_args(argv)
 
     needs_result = args.command in (
         "validate", "report", "import-harbor", "freeze-study",
         "run-study", "export-trace", "judge", "judge-pairwise", "calibrate", "cards",
+        "compare-keel-mobile",
     )
     if needs_result and not args.result:
         parser.error(f"{args.command} requires an input path")
@@ -89,6 +98,11 @@ def main(argv=None):
     if args.command in ("judge", "judge-pairwise"):
         if not args.rubric or not args.model or not args.base_url:
             parser.error(f"{args.command} requires --rubric, --model, and --base-url")
+    if args.command == "compare-keel-mobile":
+        if not args.against:
+            parser.error("compare-keel-mobile requires --against")
+        if args.format not in ("json", "markdown"):
+            parser.error("compare-keel-mobile supports --format json or markdown")
     if args.command == "calibrate" and not args.overrides:
         parser.error("calibrate requires --overrides")
 
@@ -160,6 +174,14 @@ def main(argv=None):
             data = load(args.result)
             summary = summarize(data, pass_k=[int(k) for k in args.pass_k.split(",")])
             result = write_cards(summary, args.out)
+        elif args.command == "compare-keel-mobile":
+            from .keel_mobile import compare_runs, load_run, parse_setup_pairs
+            left = load_run(args.result, parse_setup_pairs(args.left_setup), args.left_label)
+            right = load_run(args.against, parse_setup_pairs(args.right_setup), args.right_label)
+            if left["label"] == right["label"]:
+                left["label"], right["label"] = left["label"] + " (left)", right["label"] + " (right)"
+            suites = [s.strip() for s in args.suites.split(",") if s.strip()] if args.suites else None
+            result = compare_runs(left, right, suites=suites)
         elif args.command == "export-trace":
             from .trajectories import export_trajectory
             result = export_trajectory(args.result, args.out)
@@ -181,10 +203,23 @@ def main(argv=None):
             )
     except Exception as error:
         # Inputs can contain private data: do not echo values or file paths.
-        print(f"keel-arena: invalid or unreadable result ({type(error).__name__})", file=sys.stderr)
+        if args.command == "compare-keel-mobile" and isinstance(error, InvalidResult):
+            # These messages are fixed strings that never include input values.
+            print(f"keel-arena: {error}", file=sys.stderr)
+        else:
+            print(f"keel-arena: invalid or unreadable result ({type(error).__name__})", file=sys.stderr)
         return 2
 
-    if args.command == "report" and args.format == "markdown":
+    if args.command == "compare-keel-mobile" and args.format == "markdown":
+        from .keel_mobile import markdown as mobile_markdown
+        text = mobile_markdown(result)
+        if args.out:
+            Path(args.out).write_text(text, encoding="utf-8")
+        else:
+            print(text, end="")
+    elif args.command == "compare-keel-mobile" and args.out:
+        _write_json_out(args.out, result)
+    elif args.command == "report" and args.format == "markdown":
         from .reporting import markdown
         print(markdown(result), end="")
     elif args.command == "report" and args.format == "svg":

@@ -28,6 +28,8 @@ python3 -m keel_arena probe-edge         # auto-detect CPU, RAM, GPU/Vulkan/CUDA
 python3 -m keel_arena validate examples/synthetic-gauntlet-results.json
 python3 -m keel_arena report examples/synthetic-gauntlet-results.json --format markdown
 python3 -m keel_arena cards examples/synthetic-gauntlet-results.json --out ./demo-cards
+python3 -m keel_arena compare-keel-mobile examples/synthetic-keel-mobile/base-run \
+  --against examples/synthetic-keel-mobile/adapted-run --format markdown
 python3 -m unittest discover -s tests -v && python3 scripts/check_publication.py
 ```
 
@@ -42,6 +44,7 @@ Optional local install adds the `keel-arena` executable (`python3 -m pip install
 | **Edge Telemetry & Cards** | `1 → N` concurrent SSE stream throughput (`tok/s`), median/p95 TTFT, tokens-per-solve, hardware auto-detection, SVG scorecards, and offline HTML dashboard | [edge-gauntlet.md](docs/edge-gauntlet.md) |
 | **Matched Matrix & `pass@k`** | Excludes infrastructure-failed `(task, repetition)` blocks across all contestants, separates timeouts from infra errors, equal task weights, combinatorial `pass@k` | [metrics.md](docs/metrics.md) |
 | **Harbor 0.26.0 Isolation & ATIF** | Frozen studies with SHA-256 receipts, rotating order, thermal stops, bounded SSE proxy (`runtime.py`), and ATIF-v1.8 trace export | [studies.md](docs/studies.md) |
+| **Keel Mobile Paired Comparison** | Compare saved `tools/harness-eval` per-attempt JSONL runs offline: changed tasks, budget/request timeouts, setup diffs, and speed-shift warnings | [keel-mobile.md](docs/keel-mobile.md) |
 
 ## Run a real study
 
@@ -73,7 +76,7 @@ Start from `examples/study-template.json` if you prefer a hand-authored v1 matri
 ## Documentation
 
 - [Edge Gauntlet & Hardware Profiling](docs/edge-gauntlet.md) · [Frontier LLM Judge & Human Calibration](docs/frontier-judge.md)
-- [Frozen Studies](docs/studies.md) · [Harbor Keel Adapter](docs/keel-agent.md) · [Import Harbor Trials](docs/harbor-import.md)
+- [Frozen Studies](docs/studies.md) · [Harbor Keel Adapter](docs/keel-agent.md) · [Import Harbor Trials](docs/harbor-import.md) · [Compare Saved Keel Mobile Runs](docs/keel-mobile.md)
 - [Task-Level Metrics & `pass@k`](docs/metrics.md) · [Result Contract](docs/results-v1.md) · [ATIF Trajectories](docs/trajectories.md)
 - [Original Repair Pack](docs/task-pack.md) · [Downstream Training Boundary](docs/downstream.md) · [Competitive Research](docs/competitive-research.md) · [Roadmap](docs/execution.md)
 
