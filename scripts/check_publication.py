@@ -11,7 +11,18 @@ ALLOWED_FILES = {
     "SECURITY.md", "pyproject.toml", ".github/pull_request_template.md",
     "tasks/suites.json", "tasks/gauntlet/manifest.json",
 }
-ALLOWED_DIRS = {"keel_arena", "tests", "docs", "examples", "scripts", ".github/workflows", "tasks/repair"}
+ALLOWED_DIRS = {
+    "keel_arena",
+    "tests",
+    "docs",
+    "examples",
+    "examples/synthetic-keel-mobile",
+    "examples/synthetic-keel-mobile/base-run",
+    "examples/synthetic-keel-mobile/adapted-run",
+    "scripts",
+    ".github/workflows",
+    "tasks/repair",
+}
 ALLOWED_DIRS |= {
     f"tasks/repair/{task}{part}"
     for task in ("config-check", "csv-total")
@@ -63,6 +74,8 @@ def inspect(path, content):
     allowed_suffixes = {"", ".py", ".md", ".json", ".toml", ".yml", ".sh", ".txt", ".csv", ".jsonl", ".ini", ".patch"}
     if path.startswith("tasks/gauntlet/"):
         allowed_suffixes |= {".env", ".log"}
+    if path.startswith("examples/synthetic-keel-mobile/"):
+        allowed_suffixes |= {".sha256", ".log"}
     if path in {"docs/overview-demo.svg", "docs/card-demo.svg"}:
         allowed_suffixes.add(".svg")
     if relative.suffix not in allowed_suffixes and path != '.gitignore':

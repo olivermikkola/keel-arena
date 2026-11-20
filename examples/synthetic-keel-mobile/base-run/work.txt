@@ -1,0 +1,9 @@
+model: synthetic-base-Q4_K_M.gguf  family: lfm3  grammar: on  tools: workspace  context: 32768  samples: 2  tasks: 2
+sampler: top_k 50, top_p 1.0, temperature 0.1, presence_penalty 0.0, min_p 0.0, repeat_penalty 1.1
+PASS  demo-chain           #0  steps 2, prefill 800, generated 120, 3s
+PASS  demo-chain           #1  steps 2, prefill 800, generated 115, 3s
+FAIL  demo-url             #0  steps 0, prefill 400, generated 90, 2s
+FAIL  demo-url             #1  steps 0, prefill 400, generated 85, 2s
+
+local    2/4 passed · mean steps 1.0 · mean prefill tokens 600.0 · mean generated 102.5 · rejected calls 0 · JSON-wrapped calls 0 · tool errors 0 · stopped 0 · cache misses 2 · words before calls 7 chars over 4 calls · mean seconds 2.5
+all      2/4 passed · mean steps 1.0 · mean prefill tokens 600.0 · mean generated 102.5 · rejected calls 0 · JSON-wrapped calls 0 · tool errors 0 · stopped 0 · cache misses 2 · words before calls 7 chars over 4 calls · mean seconds 2.5

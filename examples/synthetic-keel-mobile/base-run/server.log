@@ -1,0 +1,5 @@
+0.00.001.000 I srv  llama_server: initializing ...
+0.00.100.000 I cmn          init: llama threadpool init, n_threads = 8
+0.00.200.000 I srv    load_model: initializing, n_slots = 4, n_ctx_slot = 32768, kv_unified = 'true'
+0.01.000.000 I slot print_timing: id  0 | task 0 | prompt eval time =    1000.00 ms /   400 tokens (    2.50 ms per token,   400.00 tokens per second)
+0.01.500.000 I slot print_timing: id  0 | task 0 |        eval time =    1000.00 ms /    50 tokens (   20.00 ms per token,    50.00 tokens per second)
