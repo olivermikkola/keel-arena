@@ -4,6 +4,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)
 
+**Is your local model actually any good?** Keel Arena answers that on your own
+hardware: same tasks, same rules, honest scores — no leaderboard hype.
+
 **Edge AI & coding-agent benchmarking suite.** Compare local models, quantizations, and agent harnesses inside identical isolated environments with deterministic checks, **blinded Frontier LLM judging + human calibration**, hardware/throughput profiling, and shareable SVG scorecards.
 
 **Public tooling. Private evaluations. Training stays downstream.**
@@ -67,10 +70,16 @@ Start from `examples/study-template.json` if you prefer a hand-authored v1 matri
 
 ## Where it fits
 
+Arena is the proof layer of the [Keel family](https://github.com/olivermikkola/keel/blob/main/docs/VISION.md):
+**Keel (CLI) is the coding agent, Keel Desktop is the everyday app whose Code
+mode is the Keel CLI** — and Arena is how they earn their claims.
+
 | Project | Responsibility |
 | --- | --- |
-| [Keel](https://github.com/olivermikkola/keel) / [Keel Desktop](https://github.com/olivermikkola/keel-desktop) | Coding-agent harness and local workspace |
-| **Keel Arena** | Evaluation protocol, 7-suite gauntlet, frontier LLM judge, hardware profiling, and scorecards |
+| [Keel](https://github.com/olivermikkola/keel) | CLI + TUI coding-agent harness for small local models |
+| [Keel Desktop](https://github.com/olivermikkola/keel-desktop) | Everyday local-AI app (Chat, Work, Images, Code) |
+| [Keel Mobile](https://github.com/olivermikkola/keel-mobile) / [Keel Console](https://github.com/olivermikkola/keel-xbox) | On-device iPhone agent / living-room Xbox app |
+| **Keel Arena** (this repo) | Evaluation protocol, 7-suite gauntlet, frontier LLM judge, hardware profiling, and scorecards |
 | `llm-lab` (or downstream consumer) | Training-data selection, SFT/DPO experiments, and model weights |
 
 ## Documentation
