@@ -26,7 +26,7 @@ Requires Python 3.11+ with **zero third-party dependencies** for validation, rep
 ```sh
 git clone https://github.com/olivermikkola/keel-arena.git && cd keel-arena
 
-python3 -m keel_arena list-suites        # see all 16 tasks across 7 agentic suites + repair
+python3 -m keel_arena list-suites        # see 16 tasks including the two repair tasks
 python3 -m keel_arena probe-edge         # auto-detect CPU, RAM, GPU/Vulkan/CUDA, thermals
 python3 -m keel_arena validate examples/synthetic-gauntlet-results.json
 python3 -m keel_arena report examples/synthetic-gauntlet-results.json --format markdown
@@ -42,7 +42,7 @@ Optional local install adds the `keel-arena` executable (`python3 -m pip install
 
 | Capability | Details | Guide |
 | --- | --- | --- |
-| **7-suite Edge Agentic Gauntlet** | 16 curated Harbor 1.4 tasks across `coding`, `tool-use`, `adversarial`, `agent-chains`, `structured`, `retrieval`, and `instruction` (`+ repair`) with separate offline verifiers | [edge-gauntlet.md](docs/edge-gauntlet.md) |
+| **7-suite Edge Agentic Gauntlet** | 16 curated Harbor-format tasks including two repair tasks. Suites cover `coding`, `tool-use`, `adversarial`, `agent-chains`, `structured`, `retrieval`, and `instruction` (`+ repair`) with separate offline verifiers | [edge-gauntlet.md](docs/edge-gauntlet.md) |
 | **Frontier LLM Judge & Calibration** | Blinded rubric evaluation (`temp=0`, injection-contained), position-swapped pairwise **Elo**, and post-test human overrides with agreement & Cohen's κ | [frontier-judge.md](docs/frontier-judge.md) |
 | **Edge Telemetry & Cards** | `1 → N` concurrent SSE stream throughput (`tok/s`), median/p95 TTFT, tokens-per-solve, hardware auto-detection, SVG scorecards, and offline HTML dashboard | [edge-gauntlet.md](docs/edge-gauntlet.md) |
 | **Matched Matrix & `pass@k`** | Excludes infrastructure-failed `(task, repetition)` blocks across all contestants, separates timeouts from infra errors, equal task weights, combinatorial `pass@k` | [metrics.md](docs/metrics.md) |
@@ -78,7 +78,8 @@ mode is the Keel CLI** — and Arena is how they earn their claims.
 | --- | --- |
 | [Keel](https://github.com/olivermikkola/keel) | CLI + TUI coding-agent harness for small local models |
 | [Keel Desktop](https://github.com/olivermikkola/keel-desktop) | Everyday local-AI app (Chat, Work, Images, Code) |
-| [Keel Mobile](https://github.com/olivermikkola/keel-mobile) / [Keel Console](https://github.com/olivermikkola/keel-xbox) | On-device iPhone agent / living-room Xbox app |
+| [Keel Mobile](https://moesystems.com/keel-mobile/) / [Keel Console](https://github.com/olivermikkola/keel-xbox) | On-device iPhone agent / living-room Xbox app |
+| [Keel Mobile for Android](https://github.com/olivermikkola/keel-mobile-android) | On-device Android agent, source-build pre-alpha |
 | **Keel Arena** (this repo) | Evaluation protocol, 7-suite gauntlet, frontier LLM judge, hardware profiling, and scorecards |
 | `llm-lab` (or downstream consumer) | Training-data selection, SFT/DPO experiments, and model weights |
 
