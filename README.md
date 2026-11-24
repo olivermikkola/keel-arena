@@ -70,13 +70,13 @@ Start from `examples/study-template.json` if you prefer a hand-authored v1 matri
 
 ## Where it fits
 
-Arena is the proof layer of the [Keel family](https://github.com/olivermikkola/keel/blob/main/docs/VISION.md):
+Arena is the proof layer of the [Keel family](https://github.com/olivermikkola/keel-code/blob/main/docs/VISION.md):
 **Keel (CLI) is the coding agent, Keel Desktop is the everyday app whose Code
 mode is the Keel CLI** — and Arena is how they earn their claims.
 
 | Project | Responsibility |
 | --- | --- |
-| [Keel](https://github.com/olivermikkola/keel) | CLI + TUI coding-agent harness for small local models |
+| [Keel Code](https://github.com/olivermikkola/keel-code) | CLI + TUI coding-agent harness (`keel`) for small local models |
 | [Keel Desktop](https://github.com/olivermikkola/keel-desktop) | Everyday local-AI app (Chat, Work, Images, Code) |
 | [Keel Mobile](https://moesystems.com/keel-mobile/) / [Keel Console](https://github.com/olivermikkola/keel-xbox) | On-device iPhone agent / living-room Xbox app |
 | [Keel Mobile for Android](https://github.com/olivermikkola/keel-mobile-android) | On-device Android agent, source-build pre-alpha |
