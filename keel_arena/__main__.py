@@ -77,14 +77,17 @@ def main(argv=None):
     parser.add_argument("--overrides", help="path to human calibration overrides JSON")
     parser.add_argument("--results", help="optional results JSON to update during calibrate")
     parser.add_argument("--seed", type=int, default=0, help="judge RNG seed")
-    # compare-keel-mobile options
-    parser.add_argument("--against", help="right-hand saved Keel Mobile run for compare-keel-mobile")
+    # compare-keel-mobile / view --against options
+    parser.add_argument(
+        "--against",
+        help="right-hand run for compare-keel-mobile or paired view (results JSON or Keel Mobile dir)",
+    )
     parser.add_argument("--suites", help="comma-separated suites to compare (default: every suite in both runs)")
     parser.add_argument("--left-setup", action="append", default=[], help="declared left setup key=value")
     parser.add_argument("--right-setup", action="append", default=[], help="declared right setup key=value")
     parser.add_argument("--left-label", help="display name for the left run")
     parser.add_argument("--right-label", help="display name for the right run")
-    # view (offline compare shell)
+    # view (offline compare shell; --against enables paired-run compare)
     parser.add_argument(
         "--serve",
         action="store_true",
@@ -196,11 +199,27 @@ def main(argv=None):
             summary = summarize(data, pass_k=[int(k) for k in args.pass_k.split(",")])
             result = write_cards(summary, args.out)
         elif args.command == "view":
-            from .compare_viewer import serve_compare_bundle, write_compare_bundle
-            result = write_compare_bundle(args.result, args.out)
+            from .compare_viewer import (
+                serve_compare_bundle,
+                write_compare_bundle,
+                write_paired_compare_bundle,
+            )
+            if args.against:
+                result = write_paired_compare_bundle(
+                    args.result,
+                    args.against,
+                    args.out,
+                    left_label=args.left_label,
+                    right_label=args.right_label,
+                    left_setup=args.left_setup,
+                    right_setup=args.right_setup,
+                    suites=args.suites,
+                )
+            else:
+                result = write_compare_bundle(args.result, args.out)
             if args.serve:
                 server, url, _thread = serve_compare_bundle(
-                    out_dir,
+                    args.out,
                     port=args.port,
                     open_browser=not args.no_open,
                 )
