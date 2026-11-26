@@ -32,6 +32,8 @@ python3 -m keel_arena validate examples/synthetic-gauntlet-results.json
 python3 -m keel_arena report examples/synthetic-gauntlet-results.json --format markdown
 python3 -m keel_arena cards examples/synthetic-gauntlet-results.json --out ./demo-cards
 python3 -m keel_arena view examples/synthetic-gauntlet-results.json --out ./artifacts/demo-compare
+python3 -m keel_arena view examples/synthetic-keel-mobile/base-run \
+  --against examples/synthetic-keel-mobile/adapted-run --out ./artifacts/demo-paired-mobile
 python3 -m keel_arena compare-keel-mobile examples/synthetic-keel-mobile/base-run \
   --against examples/synthetic-keel-mobile/adapted-run --format markdown
 python3 -m unittest discover -s tests -v && python3 scripts/check_publication.py
