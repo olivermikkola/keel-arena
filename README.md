@@ -31,6 +31,7 @@ python3 -m keel_arena probe-edge         # auto-detect CPU, RAM, GPU/Vulkan/CUDA
 python3 -m keel_arena validate examples/synthetic-gauntlet-results.json
 python3 -m keel_arena report examples/synthetic-gauntlet-results.json --format markdown
 python3 -m keel_arena cards examples/synthetic-gauntlet-results.json --out ./demo-cards
+python3 -m keel_arena view examples/synthetic-gauntlet-results.json --out ./artifacts/demo-compare
 python3 -m keel_arena compare-keel-mobile examples/synthetic-keel-mobile/base-run \
   --against examples/synthetic-keel-mobile/adapted-run --format markdown
 python3 -m unittest discover -s tests -v && python3 scripts/check_publication.py
@@ -88,7 +89,7 @@ mode is the Keel CLI** — and Arena is how they earn their claims.
 - [Edge Gauntlet & Hardware Profiling](docs/edge-gauntlet.md) · [Frontier LLM Judge & Human Calibration](docs/frontier-judge.md)
 - [Frozen Studies](docs/studies.md) · [Harbor Keel Adapter](docs/keel-agent.md) · [Import Harbor Trials](docs/harbor-import.md) · [Compare Saved Keel Mobile Runs](docs/keel-mobile.md)
 - [Task-Level Metrics & `pass@k`](docs/metrics.md) · [Result Contract](docs/results-v1.md) · [ATIF Trajectories](docs/trajectories.md)
-- [Original Repair Pack](docs/task-pack.md) · [Downstream Training Boundary](docs/downstream.md) · [Competitive Research](docs/competitive-research.md) · [Roadmap](docs/execution.md)
+- [Offline Compare Viewer](docs/compare-viewer.md) · [Original Repair Pack](docs/task-pack.md) · [Downstream Training Boundary](docs/downstream.md) · [Competitive Research](docs/competitive-research.md) · [Roadmap](docs/execution.md)
 
 ## Contribute
 
