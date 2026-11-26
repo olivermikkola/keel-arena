@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import sys
+import threading
 from pathlib import Path
 
 from .harbor_import import import_trials, read_json
@@ -45,6 +46,7 @@ def main(argv=None):
             "calibrate",
             "cards",
             "compare-keel-mobile",
+            "view",
         ),
     )
     parser.add_argument("result", nargs="?", help="path to input JSON file or directory")
@@ -82,19 +84,38 @@ def main(argv=None):
     parser.add_argument("--right-setup", action="append", default=[], help="declared right setup key=value")
     parser.add_argument("--left-label", help="display name for the left run")
     parser.add_argument("--right-label", help="display name for the right run")
+    # view (offline compare shell)
+    parser.add_argument(
+        "--serve",
+        action="store_true",
+        help="for view: serve the compare bundle on loopback and open a browser",
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=0,
+        help="for view --serve: loopback port (0 = ephemeral)",
+    )
+    parser.add_argument(
+        "--no-open",
+        action="store_true",
+        help="for view --serve: do not open a browser",
+    )
     args = parser.parse_args(argv)
 
     needs_result = args.command in (
         "validate", "report", "import-harbor", "freeze-study",
         "run-study", "export-trace", "judge", "judge-pairwise", "calibrate", "cards",
-        "compare-keel-mobile",
+        "compare-keel-mobile", "view",
     )
     if needs_result and not args.result:
         parser.error(f"{args.command} requires an input path")
     if args.command == "import-harbor" and not args.jobs_root:
         parser.error("import-harbor requires --jobs-root")
-    if args.command in ("freeze-study", "export-trace", "init-study", "cards") and not args.out:
+    if args.command in ("freeze-study", "export-trace", "init-study", "cards", "view") and not args.out:
         parser.error("this command requires --out")
+    if args.command == "view" and args.port < 0:
+        parser.error("--port must be >= 0")
     if args.command in ("judge", "judge-pairwise"):
         if not args.rubric or not args.model or not args.base_url:
             parser.error(f"{args.command} requires --rubric, --model, and --base-url")
@@ -174,6 +195,25 @@ def main(argv=None):
             data = load(args.result)
             summary = summarize(data, pass_k=[int(k) for k in args.pass_k.split(",")])
             result = write_cards(summary, args.out)
+        elif args.command == "view":
+            from .compare_viewer import serve_compare_bundle, write_compare_bundle
+            result = write_compare_bundle(args.result, args.out)
+            if args.serve:
+                server, url, _thread = serve_compare_bundle(
+                    out_dir,
+                    port=args.port,
+                    open_browser=not args.no_open,
+                )
+                result = {**result, "url": url, "serving": True}
+                print(json.dumps(result, indent=2, sort_keys=True, allow_nan=False))
+                print(f"Serving compare view at {url} (Ctrl+C to stop)", file=sys.stderr)
+                try:
+                    threading.Event().wait()
+                except KeyboardInterrupt:
+                    pass
+                finally:
+                    server.shutdown()
+                return 0
         elif args.command == "compare-keel-mobile":
             from .keel_mobile import compare_runs, load_run, parse_setup_pairs
             left = load_run(args.result, parse_setup_pairs(args.left_setup), args.left_label)
